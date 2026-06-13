@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Đọc Truyện Online - Cứu Truyện">
+    <title id="pageTitle">Đọc Manga - Cứu Truyện</title>
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <style>
+        :root {
+            --reader-bg: #10141b;
+            --sidebar-bg: #161a23;
+            --accent-color: #3b82f6;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --header-h: 110px;
+            --card-bg: #1a1e26;
+            --bottom-bar-bg: rgba(22, 26, 35, 0.98);
+            --btn-bg: rgba(255,255,255,0.05);
+            --btn-border: rgba(255,255,255,0.1);
+            --border-color: rgba(255,255,255,0.05);
+            --input-bg: #1a1e26;
+        }
+
+        body.light-mode {
+            --reader-bg: #f8fafc;
+            --sidebar-bg: #ffffff;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --card-bg: #ffffff;
+            --bottom-bar-bg: rgba(255, 255, 255, 0.98);
+            --btn-bg: rgba(0,0,0,0.05);
+            --btn-border: rgba(0,0,0,0.1);
+            --border-color: rgba(0,0,0,0.1);
+            --input-bg: #ffffff;
+        }
+
+        body {
+            background-color: var(--reader-bg);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--reader-bg);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Top Bar Removed */
+
+        .main-logo {
+            font-size: 28px;
+            font-weight: 900;
+            letter-spacing: 3px;
+            color: var(--text-primary);
+            text-decoration: none;
+            text-transform: uppercase;
+        }
+
+        /* Navigation Buttons */
+        .chapter-nav-btn {
+            background-color: #272c35;
+            color: var(--text-primary);
+            border: none;
+            padding: 14px 25px;
+            border-radius: 8px;
+            font-weight: 700;
+            width: 100%;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .chapter-nav-btn:not(.text-muted) {
+            background-color: var(--accent-color);
+        }
+        .chapter-nav-btn:hover {
+            opacity: 0.9;
+            color: white;
+            transform: translateY(-2px);
+        }
+        .chapter-nav-btn.text-muted {
+            background-color: #1a1e26;
+            color: #64748b !important;
+        }
+
+        .manga-breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        .manga-breadcrumb a {
+            color: var(--text-secondary);
+            text-decoration: none;
+        }
+        .manga-breadcrumb a:hover {
+            color: var(--text-primary);
+        }
+
+        .chapter-title {
+            font-size: 32px;
+            font-weight: 800;
+            margin: 25px 0;
+            text-align: center;
+            line-height: 1.3;
+        }
+
+        /* Viewer */
+        .manga-viewer {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px 0;
+            min-height: 50vh;
+        }
+        .manga-viewer img {
+            width: 100%;
+            display: block;
+            margin-bottom: 4px;
+            border-radius: 2px;
+        }
+
+        /* Floating Bottom Bar */
+        .fixed-bottom-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--bottom-bar-bg);
+            backdrop-filter: blur(15px);
+            padding: 15px 0;
+            border-top: 1px solid var(--border-color);
+            z-index: 1050;
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.2);
+        }
+
+        .bottom-action-btn {
+            background: var(--btn-bg);
+            border: 1px solid var(--btn-border);
+            color: var(--text-secondary);
+            width: 44px;
+            height: 44px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .bottom-action-btn:hover {
+            background: var(--btn-border);
+            color: var(--text-primary);
+        }
+
+        .comment-badge-btn {
+            background-color: var(--accent-color);
+            color: white;
+            padding: 8px 18px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 700;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: transform 0.2s;
+        }
+        .comment-badge-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .bottom-nav-selector {
+            background-color: var(--input-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            min-width: 200px;
+            text-align: center;
+        }
+
+        /* Sidebar Bình Luận */
+        .comment-sidebar {
+            position: fixed;
+            top: 0;
+            right: -450px; /* Hidden on the right */
+            width: 450px;
+            height: 100%;
+            background-color: var(--sidebar-bg);
+            z-index: 2000;
+            transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            flex-direction: column;
+            box-shadow: -10px 0 40px rgba(0,0,0,0.7);
+        }
+        .comment-sidebar.active {
+            right: 0;
+        }
+        .comment-sidebar-header {
+            padding: 25px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .comment-sidebar-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 25px;
+        }
+        .comment-sidebar-footer {
+            padding: 25px;
+            background-color: var(--reader-bg);
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .comment-item {
+            margin-bottom: 25px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+        }
+        .comment-author {
+            font-weight: 700;
+            font-size: 15px;
+            margin-bottom: 5px;
+            color: var(--accent-color);
+        }
+        .comment-content {
+            font-size: 14.5px;
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+        .comment-meta {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 8px;
+            display: flex;
+            gap: 20px;
+        }
+        
+        .overlay-mask {
+            display: none !important;
+        }
+        
+        body {
+            transition: padding-right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        body.sidebar-open {
+            padding-right: 450px;
+        }
+
+        /* Loading Spinner */
+        .page-loader {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 400px;
+        }
+
+        /* Responsive Improvements */
+        @media (max-width: 576px) {
+            .comment-sidebar {
+                width: 100%;
+                right: -100%;
+            }
+            .chapter-title {
+                font-size: 22px;
+            }
+            .bottom-nav-selector {
+                min-width: 120px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app-header"></div>
+
+    <!-- Main Content -->
+    <div class="container my-4">
+        <div class="manga-breadcrumb">
+            <a href="../index.html">Trang chủ</a>
+            <i class="fa-solid fa-chevron-right small"></i>
+            <a href="#" id="seriesLink">Đang tải...</a>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <h1 class="chapter-title" id="chapterTitle">Đang tải...</h1>
+                
+                <div class="row g-3 mb-5 mt-2">
+                    <div class="col-6">
+                        <a href="#" id="btnPrevTop" class="chapter-nav-btn text-muted"> <i class="fa-solid fa-chevron-left"></i> CHƯƠNG TRƯỚC</a>
+                    </div>
+                    <div class="col-6">
+                        <a href="#" id="btnNextTop" class="chapter-nav-btn">CHƯƠNG SAU <i class="fa-solid fa-chevron-right"></i></a>
+                    </div>
+                </div>
+
+                <!-- Alert/Notice Banner -->
+                <div class="text-center mb-5">
+                    <div class="shadow-sm" style="background-color: var(--card-bg); padding: 18px; border-radius: 12px; border-left: 4px solid var(--accent-color);">
+                        <p class="mb-0 text-secondary">
+                            <i class="fa-solid fa-circle-info me-2 text-primary"></i>
+                            Tham gia kênh <a href="https://discord.gg/3vkD7hhdZ" target="_blank" class="text-primary fw-bold text-decoration-none">Discord</a> của Cứu Truyện để cập nhật chương mới nhất!
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Viewer -->
+    <div class="manga-viewer" id="mangaViewer">
+        <div class="page-loader">
+            <div class="spinner-border text-primary mb-3" role="status"></div>
+            <p class="text-secondary">Hãy kiên nhẫn, trang đang được nạp...</p>
+        </div>
+    </div>
+
+    <!-- Bottom Buttons -->
+    <div class="container my-5 pb-5">
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="row g-3">
+                    <div class="col-6">
+                        <a href="#" id="btnPrevBottom" class="chapter-nav-btn text-muted"><i class="fa-solid fa-chevron-left"></i> CHƯƠNG TRƯỚC</a>
+                    </div>
+                    <div class="col-6">
+                        <a href="#" id="btnNextBottom" class="chapter-nav-btn">CHƯƠNG SAU <i class="fa-solid fa-chevron-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fixed Bottom Bar -->
+    <div class="fixed-bottom-bar">
+        <div class="container d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-3">
+                <button class="comment-badge-btn shadow-sm" id="btnShowComments">
+                    <i class="fa-solid fa-comments"></i> <span id="commentCount">0</span>
+                </button>
+            </div>
+            
+            <div class="d-flex align-items-center gap-1 gap-md-2">
+                <a href="#" class="bottom-action-btn text-decoration-none" id="btnPrevBottomNav"><i class="fa-solid fa-chevron-left"></i></a>
+                <select class="bottom-nav-selector shadow-sm" id="chapterSelector">
+                    <!-- Options -->
+                </select>
+                <a href="#" class="bottom-action-btn text-decoration-none" id="btnNextBottomNav"><i class="fa-solid fa-chevron-right"></i></a>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button class="bottom-action-btn d-none d-md-flex" id="btnToggleTheme" title="Chuyển Sáng/Tối"><i class="fa-solid fa-moon"></i></button>
+                <button class="bottom-action-btn" id="btnScrollTop"><i class="fa-solid fa-arrow-up"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <div class="overlay-mask" id="sidebarMask"></div>
+    <div class="comment-sidebar" id="commentSidebar">
+        <div class="comment-sidebar-header">
+            <h5 class="mb-0 fw-bold"><i class="fa-solid fa-comments me-2 text-primary"></i> Bình luận</h5>
+            <button class="btn-close btn-close-white" id="btnCloseSidebar" aria-label="Close"></button>
+        </div>
+        <div class="comment-sidebar-body" id="commentList">
+            <!-- Comments injected here -->
+        </div>
+        <div class="comment-sidebar-footer">
+            <div class="position-relative">
+                <textarea class="form-control" style="background-color: var(--input-bg); color: var(--text-primary); border-color: var(--border-color);" rows="2" placeholder="Nhập bình luận... (Ctrl+Enter)"></textarea>
+                <button class="btn btn-link position-absolute end-0 top-0 text-primary mt-2" title="Gửi"><i class="fa-solid fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Modal -->
+    <div class="modal fade" id="reportModal" tabindex="-1" data-bs-theme="dark">
+      <div class="modal-dialog">
+        <div class="modal-content text-white" style="background-color: var(--reader-bg);">
+          <div class="modal-header border-secondary">
+            <h5 class="modal-title" id="reportModalTitle"><i class="fa-solid fa-flag text-danger me-2"></i> Báo Cáo Vi Phạm</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="reportEntityType">
+            <input type="hidden" id="reportEntityId">
+            <div class="mb-3">
+              <label for="reportReason" class="form-label text-secondary fw-bold">Lý do báo cáo</label>
+              <textarea class="form-control bg-dark text-white border-secondary" id="reportReason" rows="3" placeholder="Ví dụ: Spam, chửi bậy, quảng cáo trái phép..." required></textarea>
+            </div>
+          </div>
+          <div class="modal-footer border-secondary">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+            <button type="button" class="btn btn-danger fw-bold" id="btnSubmitReport">Gửi Báo Cáo</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/js/api.js"></script>
+    <script src="../assets/js/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const params = new URLSearchParams(window.location.search);
+            const chapterId = parseInt(params.get('chapterId')) || 1;
+
+            const sidebar = document.getElementById('commentSidebar');
+            const mask = document.getElementById('sidebarMask');
+            
+            // UI Elements
+            const btnPrevTop = document.getElementById('btnPrevTop');
+            const btnNextTop = document.getElementById('btnNextTop');
+            const btnPrevBottom = document.getElementById('btnPrevBottom');
+            const btnNextBottom = document.getElementById('btnNextBottom');
+            const btnPrevBottomNav = document.getElementById('btnPrevBottomNav');
+            const btnNextBottomNav = document.getElementById('btnNextBottomNav');
+            const chapterSelector = document.getElementById('chapterSelector');
+            
+            // Toggle Sidebar
+            const toggleSidebar = (show) => {
+                sidebar.classList.toggle('active', show);
+                document.body.classList.toggle('sidebar-open', show);
+            };
+
+            document.getElementById('btnShowComments').addEventListener('click', () => toggleSidebar(true));
+            document.getElementById('btnCloseSidebar').addEventListener('click', () => toggleSidebar(false));
+
+            // Scroll Top
+            document.getElementById('btnScrollTop').addEventListener('click', () => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            // Theme Toggle
+            const btnToggleTheme = document.getElementById('btnToggleTheme');
+            const themeIcon = btnToggleTheme.querySelector('i');
+            let isLightMode = localStorage.getItem('manga_theme') === 'light';
+
+            const applyTheme = (light) => {
+                if (light) {
+                    document.body.classList.add('light-mode');
+                    themeIcon.classList.remove('fa-moon');
+                    themeIcon.classList.add('fa-sun');
+                } else {
+                    document.body.classList.remove('light-mode');
+                    themeIcon.classList.remove('fa-sun');
+                    themeIcon.classList.add('fa-moon');
+                }
+            };
+
+            applyTheme(isLightMode);
+
+            btnToggleTheme.addEventListener('click', () => {
+                isLightMode = !isLightMode;
+                localStorage.setItem('manga_theme', isLightMode ? 'light' : 'dark');
+                applyTheme(isLightMode);
+            });
+
+            // Fetch Chapter Data
+            async function loadChapterData() {
+                try {
+                    const chapter = await ApiService.getChapter(chapterId);
+                    const pages = await ApiService.getChapterPages(chapterId);
+                    const comments = await ApiService.getComments(chapterId);
+                    const allChapters = await ApiService.getChaptersBySeries(chapter.series.seriesId);
+
+                    // Update UI Labels
+                    const displayTitle = `Chương ${chapter.chapterNumber}${chapter.title ? ': ' + chapter.title : ''}`;
+                    document.getElementById('chapterTitle').textContent = displayTitle;
+                    document.title = `${displayTitle} - ${chapter.series.title}`;
+                    document.getElementById('seriesLink').textContent = chapter.series.title;
+                    document.getElementById('seriesLink').href = `chi-tiet-truyen.html?id=${chapter.series.seriesId}`;
+                    document.getElementById('commentCount').textContent = comments.length;
+
+                    // Images - check if locked first
+                    const viewer = document.getElementById('mangaViewer');
+                    const serverUrl = API_CONFIG.BASE_URL.replace('/api', '');
+
+                    // Free chapter
+                    viewer.innerHTML = pages.map(p => {
+                        const finalUrl = getImageUrl(p.imageUrl);
+                        return `<img src="${finalUrl || ''}" alt="Page ${p.pageNumber}" loading="lazy" style="background-color: #f0f0f0; min-height: 200px;">`;
+                    }).join('');
+
+                    // Comments
+                    const commentList = document.getElementById('commentList');
+                    if (comments.length === 0) {
+                        commentList.innerHTML = '<div class="text-center text-secondary py-5">Chưa có bình luận nào.</div>';
+                    } else {
+                        commentList.innerHTML = comments.map(c => {
+                            const safeAuthor = window.escapeHTML ? window.escapeHTML(c.user ? c.user.username : 'Ẩn danh') : String(c.user ? c.user.username : 'Ẩn danh').replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                            const safeContent = window.escapeHTML ? window.escapeHTML(c.content) : String(c.content).replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                            return `
+                            <div class="comment-item">
+                                <div class="comment-author">${safeAuthor}</div>
+                                <div class="comment-content">${safeContent}</div>
+                                <div class="comment-meta">
+                                    <span>${new Date(c.createdAt).toLocaleDateString()}</span>
+                                    <a href="#" class="text-decoration-none text-secondary">Trả lời</a>
+                                    <a href="#" class="text-decoration-none text-danger" onclick="showReportModal('comment', ${c.commentId}); return false;"><i class="fa-solid fa-flag"></i> Báo cáo</a>
+                                </div>
+                            </div>
+                        `;}).join('');
+                    }
+
+                    // Populate Selector & Navigation
+                    chapterSelector.innerHTML = '';
+                    let prevId = null, nextId = null;
+                    
+                    // Sort chapters to find neighbors
+                    const sortedChaps = [...allChapters].sort((a, b) => a.chapterNumber - b.chapterNumber);
+                    const currentIndex = sortedChaps.findIndex(c => c.chapterId === chapterId);
+                    
+                    if (currentIndex > 0) prevId = sortedChaps[currentIndex - 1].chapterId;
+                    if (currentIndex < sortedChaps.length - 1) nextId = sortedChaps[currentIndex + 1].chapterId;
+
+                    sortedChaps.reverse().forEach(c => {
+                        const opt = document.createElement('option');
+                        opt.value = c.chapterId;
+                        opt.textContent = `Chương ${c.chapterNumber}`;
+                        if (c.chapterId === chapterId) opt.selected = true;
+                        chapterSelector.appendChild(opt);
+                    });
+
+                    // Navigation Link Updates
+                    const updateNav = (btn, id) => {
+                        if (id) {
+                            btn.href = `doc-truyen.html?chapterId=${id}`;
+                            btn.classList.remove('text-muted', 'disabled');
+                        } else {
+                            btn.href = "#";
+                            btn.classList.add('text-muted', 'disabled');
+                        }
+                    };
+
+                    updateNav(btnPrevTop, prevId);
+                    updateNav(btnPrevBottom, prevId);
+                    updateNav(btnPrevBottomNav, prevId);
+                    
+                    updateNav(btnNextTop, nextId);
+                    updateNav(btnNextBottom, nextId);
+                    updateNav(btnNextBottomNav, nextId);
+
+                    chapterSelector.addEventListener('change', (e) => {
+                        window.location.href = `doc-truyen.html?chapterId=${e.target.value}`;
+                    });
+
+                    // Update Top Nav button to be prominent
+                    if (nextId) btnNextTop.style.backgroundColor = 'var(--accent-color)';
+                    if (nextId) btnNextBottom.style.backgroundColor = 'var(--accent-color)';
+
+                    // Post Comment Logic
+                    const commentArea = document.querySelector('.comment-sidebar-footer textarea');
+                    const btnSend = document.querySelector('.comment-sidebar-footer button');
+
+                    const handleSend = async () => {
+                        const user = JSON.parse(localStorage.getItem('user'));
+                        if (!user || !user.userId) {
+                            alert("Vui lòng đăng nhập lại để bình luận (bản cập nhật mới yêu cầu xác thực lại)!");
+                            return;
+                        }
+
+                        const content = commentArea.value.trim();
+                        if (!content) return;
+
+                        try {
+                            btnSend.disabled = true;
+                            await ApiService.addComment({
+                                userId: user.userId,
+                                seriesId: chapter.series.seriesId,
+                                chapterId: chapterId,
+                                content: content
+                            });
+                            commentArea.value = '';
+                            // Refresh comments
+                            const newComments = await ApiService.getComments(chapterId);
+                            renderComments(newComments);
+                        } catch (err) {
+                            console.error(err);
+                            alert("Không thể gửi bình luận.");
+                        } finally {
+                            btnSend.disabled = false;
+                        }
+                    };
+
+                    btnSend.addEventListener('click', handleSend);
+                    commentArea.addEventListener('keydown', (e) => {
+                        if (e.ctrlKey && e.key === 'Enter') handleSend();
+                    });
+
+                } catch (error) {
+                    console.error("Error loading chapter:", error);
+                    document.getElementById('mangaViewer').innerHTML = '<div class="alert alert-danger m-5">Lỗi tải dữ liệu. Vui lòng kiểm tra Server!</div>';
+                }
+            }
+
+            function renderComments(comments) {
+                const commentList = document.getElementById('commentList');
+                if (comments.length === 0) {
+                    commentList.innerHTML = '<div class="text-center text-secondary py-5">Chưa có bình luận nào.</div>';
+                } else {
+                    commentList.innerHTML = comments.map(c => {
+                        const safeAuthor = window.escapeHTML ? window.escapeHTML(c.user ? c.user.username : 'Ẩn danh') : String(c.user ? c.user.username : 'Ẩn danh').replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                        const safeContent = window.escapeHTML ? window.escapeHTML(c.content) : String(c.content).replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                        return `
+                        <div class="comment-item">
+                            <div class="comment-author">${safeAuthor}</div>
+                            <div class="comment-content">${safeContent}</div>
+                            <div class="comment-meta">
+                                <span>${new Date(c.createdAt).toLocaleDateString()}</span>
+                                <a href="#" class="text-decoration-none text-secondary">Trả lời</a>
+                                <a href="#" class="text-decoration-none text-danger" onclick="showReportModal('comment', ${c.commentId}); return false;"><i class="fa-solid fa-flag"></i> Báo cáo</a>
+                            </div>
+                        </div>
+                    `;}).join('');
+                }
+                document.getElementById('commentCount').textContent = comments.length;
+            }
+
+            loadChapterData();
+
+            // Report Logic
+            let reportModal;
+            window.showReportModal = function(type, id) {
+                const user = JSON.parse(localStorage.getItem('user'));
+                if (!user) {
+                    alert("Vui lòng đăng nhập để thực hiện chức năng này!");
+                    return;
+                }
+                if (!reportModal) {
+                    reportModal = new bootstrap.Modal(document.getElementById('reportModal'));
+                }
+                document.getElementById('reportEntityType').value = type;
+                document.getElementById('reportEntityId').value = id;
+                document.getElementById('reportReason').value = '';
+                reportModal.show();
+            }
+
+            document.getElementById('btnSubmitReport')?.addEventListener('click', async () => {
+                const type = document.getElementById('reportEntityType').value;
+                const id = document.getElementById('reportEntityId').value;
+                const reason = document.getElementById('reportReason').value.trim();
+                
+                if (!reason) {
+                    alert("Vui lòng nhập lý do báo cáo!");
+                    return;
+                }
+                
+                const btn = document.getElementById('btnSubmitReport');
+                const originalText = btn.innerHTML;
+                try {
+                    btn.disabled = true;
+                    btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Đang gửi...';
+                    await ApiService.createReport(type, parseInt(id), reason);
+                    reportModal.hide();
+                    alert("Báo cáo của bạn đã được gửi thành công. Cảm ơn bạn đã đóng góp!");
+                } catch (err) {
+                    console.error(err);
+                    alert("Có lỗi xảy ra khi gửi báo cáo: " + err.message);
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

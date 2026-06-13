@@ -1,0 +1,18 @@
+# OS / IDE
+.DS_Store
+.idea/
+.vscode/
+
+# Build output
+backend/target/
+target/
+
+# Local database dumps
+*.sql
+
+# Runtime uploaded files
+uploads/
+backend/uploads/
+
+# Logs
+*.log

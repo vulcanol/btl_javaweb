@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1200"> <!-- Cố định kích thước cho Desktop -->
+    <meta name="description" content="Cứu Truyện - Trang truyện mới">
+    <title>Cứu Truyện - Tất Cả Truyện Mới</title>
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <style>
+        /* Trang full grid nên background có thể cần xám đồng bộ hơn */
+        body {
+            background-color: var(--primary-bg);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Bắt đầu Header (Bê nguyên từ index.html) -->
+    <div id="app-header"></div>
+    <!-- Kết thúc Header -->
+
+    <!-- Main Content -->
+    <main class="py-5">
+        <div class="container-fluid px-5 mx-auto" style="max-width: 1400px;">
+
+            <!-- Truyen Moi Section (Lưới 5 cột x 6 hàng = 30 Card) -->
+            <section class="recently-updated-section mb-5 position-relative">
+                <div class="d-flex justify-content-between align-items-center mb-5">
+                    <h4 class="fw-bold fs-5 text-uppercase text-secondary section-title">TẤT CẢ TRUYỆN MỚI</h4>
+                </div>
+
+                <!-- Lưới 5 cột mỗi hàng `row-cols-5` -->
+                <div class="row row-cols-5 g-4 pb-5" id="mangaList">
+                    <!-- Nội dung sinh ra bằng Javascript -->
+                </div>
+
+                <!-- Phân trang -->
+                <div class="d-flex justify-content-center mt-2 border-top pt-4">
+                    <button class="btn btn-light fw-bold text-secondary px-4 me-3 border shadow-sm" id="prevPageBtn" disabled><i class="fa-solid fa-chevron-left me-2"></i> Trang trước</button>
+                    <!-- Wait, if prevailing standard is 'Trang trước' is Left and 'Trang sau' is right -->
+                    <button class="btn btn-light fw-bold text-dark px-4 border shadow-sm" id="nextPageBtn">Trang tiếp theo <i class="fa-solid fa-chevron-right ms-2"></i></button>
+                </div>
+
+
+
+            </section>
+        </div>
+
+        <!-- Floating Chat Button-->
+        <a href="#" class="floating-chat-btn">
+            <i class="fa-brands fa-facebook-messenger"></i>
+        </a>
+
+    </main>
+
+    <!-- Search Overlay -->
+    <div id="searchOverlay" class="search-overlay d-none">
+        <div class="search-overlay-content container mx-auto" style="max-width: 800px; padding-top: 100px;">
+            <!-- Search Input Container -->
+            <div class="position-relative">
+                <input type="text" id="liveSearchInput"
+                    class="form-control form-control-lg py-3 px-4 rounded-3 shadow-sm"
+                    style="font-size: 1.15rem; border: 2px solid #a2bdf8;" placeholder="Tìm kiếm...">
+                <div class="d-flex justify-content-end mt-2">
+                    <a href="search.html" class="text-secondary fw-bold text-decoration-none"
+                        style="font-size: 0.85rem;">Tìm kiếm nâng cao</a>
+                </div>
+            </div>
+
+            <!-- Dropdown Results Container -->
+            <div id="searchResults"
+                class="search-results-dropdown bg-white rounded-3 shadow-lg mt-3 overflow-hidden d-none">
+                <div class="list-group list-group-flush" id="searchResultList">
+                    <!-- Template Javascript -->
+                </div>
+                <div class="bg-light p-3 border-top pb-2">
+                    <a href="search.html" class="text-secondary text-decoration-none fw-bold"
+                        style="font-size: 0.85rem;" id="searchAllText">Tìm tất cả kết quả cho từ khóa</a>
+                </div>
+            </div>
+        </div>
+        <!-- Button to close overlay -->
+        <button id="closeSearchBtn" class="btn text-secondary position-absolute top-0 end-0 m-4 fs-2 border-0"><i
+                class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/js/api.js"></script>
+    <script src="../assets/js/script.js"></script>
+    <script>
+        let currentPage = 0; // Backend uses 0-based index
+        const pageSize = 20;
+
+        async function renderMangas(page) {
+            const container = document.getElementById('mangaList');
+            container.innerHTML = '<div class="col-12 text-center py-5"><div class="spinner-border text-warning" role="status"></div></div>';
+            
+            try {
+                const data = await ApiService.getAllMangas(page, pageSize);
+                const mangas = data.content;
+                const totalPages = data.totalPages;
+                
+                if (mangas.length === 0) {
+                    container.innerHTML = '<div class="col-12 text-center py-5 text-muted">Chưa có truyện nào được đăng</div>';
+                } else {
+                    container.innerHTML = mangas.map(m => `
+                        <div class="col">
+                            <div class="manga-card h-100">
+                                <div class="card border-0 bg-transparent h-100">
+                                    <div class="manga-cover rounded-3 overflow-hidden position-relative shadow-sm mb-2" style="aspect-ratio: 3/4">
+                                        <a href="chi-tiet-truyen.html?id=${m.seriesId}" class="d-block w-100 h-100">
+                                            <img src="${getImageUrl(m.coverUrl) || ''}"
+                                                alt="${m.title}" class="w-100 h-100 object-fit-cover" style="background-color: #f0f0f0;">
+                                        </a>
+                                        ${m.latestChapter ? `<span class="badge position-absolute top-0 start-0 m-2 rounded-pill chapter-badge">C.${m.latestChapter}</span>` : ''}
+                                    </div>
+                                    <div class="card-body p-0 mt-2">
+                                        <h6 class="card-title fw-bold text-truncate mb-1">
+                                            <a href="chi-tiet-truyen.html?id=${m.seriesId}" class="text-dark text-decoration-none">${m.title}</a>
+                                        </h6>
+                                        <p class="card-text small text-muted mb-0" style="font-size: 0.75rem;">
+                                            ${m.status || 'Đang cập nhật'}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+                
+                document.getElementById('prevPageBtn').disabled = (page === 0);
+                document.getElementById('nextPageBtn').disabled = (page >= totalPages - 1);
+                
+            } catch (err) {
+                container.innerHTML = '<div class="col-12 text-center py-5 text-danger">Lỗi tải dữ liệu. Vui lòng thử lại sau.</div>';
+                console.error(err);
+            }
+        }
+
+        document.getElementById('nextPageBtn').addEventListener('click', function() {
+            currentPage++;
+            renderMangas(currentPage);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        document.getElementById('prevPageBtn').addEventListener('click', function() {
+            if (currentPage > 0) {
+                currentPage--;
+                renderMangas(currentPage);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        });
+
+        // Initial load
+        document.addEventListener('DOMContentLoaded', () => {
+            renderMangas(currentPage);
+        });
+    </script>
+</body>
+
+</html>

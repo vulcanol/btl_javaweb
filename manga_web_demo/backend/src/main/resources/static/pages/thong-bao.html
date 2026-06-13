@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1200">
+    <meta name="description" content="Cứu Truyện - Thông Báo">
+    <title>Cứu Truyện - Thông Báo</title>
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <style>
+        body {
+            background-color: var(--primary-bg);
+        }
+        .notification-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(0,0,0,0.05);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+            transition: transform 0.2s;
+            display: flex;
+            align-items: flex-start;
+            gap: 1.5rem;
+        }
+        .notification-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.05);
+        }
+        .notification-card.unread {
+            background: #f8fafc;
+            border-left: 4px solid #f7a928;
+        }
+        .notification-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #64748b;
+        }
+        .notification-card.unread .notification-icon {
+            background: rgba(247, 169, 40, 0.2);
+            color: #f7a928;
+        }
+        .notification-content {
+            flex-grow: 1;
+        }
+        .notification-title {
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 0.2rem;
+            font-size: 1.1rem;
+        }
+        .notification-time {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+        }
+        .notification-message {
+            color: #475569;
+            margin-bottom: 0;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Bắt đầu Header -->
+    <div id="app-header"></div>
+
+    <main class="py-5" style="background-color: #f8fafc; min-height: 80vh;">
+        <div class="container mx-auto" style="max-width: 800px;">
+            <div class="d-flex justify-content-between align-items-center mb-5">
+                <h2 class="fw-bold fs-2 text-dark mb-0"><i class="fa-regular fa-bell me-3 text-warning"></i>Thông Báo Của Bạn</h2>
+                <button class="btn btn-outline-secondary fw-bold rounded-pill px-4" id="btnMarkAllRead">Đánh dấu đã đọc tất cả</button>
+            </div>
+
+            <div id="notificationList">
+                <!-- Notifications will be injected here via JS -->
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/js/api.js"></script>
+    <script src="../assets/js/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const userData = JSON.parse(localStorage.getItem('user'));
+            if (!userData) {
+                window.location.href='../index.html';
+                return;
+            }
+
+            const notifList = document.getElementById('notificationList');
+            let notifications = [];
+
+            if (userData.role === 'admin') {
+                notifications = JSON.parse(localStorage.getItem('admin_notifications') || '[]');
+                if (notifications.length === 0) {
+                    notifications = [
+                        { id: 1, title: 'Hệ thống', message: 'Chào mừng Admin trở lại Cứu Truyện!', time: new Date().toISOString(), read: true }
+                    ];
+                }
+            } else {
+                notifications = JSON.parse(localStorage.getItem('user_notifications') || '[]');
+                if (notifications.length === 0) {
+                    notifications = [
+                        { id: 1, title: 'Cứu Truyện Team', message: 'Cảm ơn bạn đã tham gia Cứu Truyện! Khám phá kho truyện ngay thôi.', time: new Date().toISOString(), read: false }
+                    ];
+                }
+            }
+
+            // Sort by time descending
+            notifications.sort((a, b) => new Date(b.time) - new Date(a.time));
+
+            const renderNotifs = () => {
+                if (notifications.length === 0) {
+                    notifList.innerHTML = '<div class="text-center text-muted py-5"><i class="fa-regular fa-bell-slash fs-1 mb-3"></i><p class="fs-5">Không có thông báo nào</p></div>';
+                    return;
+                }
+
+                notifList.innerHTML = notifications.map(n => {
+                    const timeStr = new Date(n.time).toLocaleString('vi-VN');
+                    return `
+                        <div class="notification-card ${n.read ? '' : 'unread'}">
+                            <div class="notification-icon">
+                                <i class="fa-solid fa-info"></i>
+                            </div>
+                            <div class="notification-content">
+                                <h5 class="notification-title">${n.title}</h5>
+                                <div class="notification-time">${timeStr}</div>
+                                <p class="notification-message">${n.message}</p>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            };
+
+            renderNotifs();
+
+            document.getElementById('btnMarkAllRead').addEventListener('click', () => {
+                notifications = notifications.map(n => ({ ...n, read: true }));
+                if (userData.role === 'admin') {
+                    localStorage.setItem('admin_notifications', JSON.stringify(notifications));
+                } else {
+                    localStorage.setItem('user_notifications', JSON.stringify(notifications));
+                }
+                renderNotifs();
+            });
+        });
+    </script>
+</body>
+
+</html>

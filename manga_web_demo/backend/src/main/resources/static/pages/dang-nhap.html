@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập | Cứu Truyện</title>
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Inter', sans-serif;
+        }
+        .auth-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 450px;
+            padding: 40px;
+            transition: all 0.3s ease;
+        }
+        .auth-logo {
+            font-size: 24px;
+            font-weight: 800;
+            color: #333;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .form-control {
+            border-radius: 12px;
+            padding: 12px 15px;
+            border: 1px solid #e0e0e0;
+            background: rgba(255, 255, 255, 0.5);
+        }
+        .form-control:focus {
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+            border-color: #0d6efd;
+            background: #fff;
+        }
+        .btn-auth {
+            border-radius: 12px;
+            padding: 12px;
+            font-weight: 700;
+            width: 100%;
+            margin-top: 20px;
+            transition: all 0.2s;
+        }
+        .auth-switch {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 14px;
+            color: #666;
+        }
+        .auth-switch a {
+            color: #0d6efd;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        #registerForm { display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="auth-card">
+        <a href="../index.html" class="auth-logo">CỨU TRUYỆN</a>
+        
+        <!-- Login Form -->
+        <form id="loginForm">
+            <h4 class="fw-bold mb-4 text-center">Chào mừng trở lại!</h4>
+            <div class="mb-3">
+                <label class="form-label small fw-bold">Tên đăng nhập</label>
+                <input type="text" class="form-control" name="username" placeholder="Nhập tên đăng nhập" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label small fw-bold">Mật khẩu</label>
+                <input type="password" class="form-control" name="password" placeholder="Nhập mật khẩu" required>
+            </div>
+            <button type="submit" class="btn btn-dark btn-auth">ĐĂNG NHẬP</button>
+            <div class="auth-switch">
+                Chưa có tài khoản? <a href="#" onclick="toggleAuth('register')">Đăng ký ngay</a>
+            </div>
+        </form>
+
+        <!-- Register Form -->
+        <form id="registerForm">
+            <h4 class="fw-bold mb-4 text-center">Tạo tài khoản mới</h4>
+            <div class="mb-3">
+                <label class="form-label small fw-bold">Tên đăng nhập</label>
+                <input type="text" class="form-control" name="username" placeholder="Ví dụ: bachtuoc2k" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label small fw-bold">Email</label>
+                <input type="email" class="form-control" name="email" placeholder="email@vi-du.com" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label small fw-bold">Tên hiển thị</label>
+                <input type="text" class="form-control" name="displayName" placeholder="Ví dụ: Bạch Tuộc Cute" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label small fw-bold">Mật khẩu</label>
+                <input type="password" class="form-control" name="password" placeholder="Tối thiểu 6 ký tự" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-auth">ĐĂNG KÝ</button>
+            <div class="auth-switch">
+                Đã có tài khoản? <a href="#" onclick="toggleAuth('login')">Đăng nhập</a>
+            </div>
+        </form>
+    </div>
+
+    <script src="../assets/js/api.js"></script>
+    <script>
+        function toggleAuth(type) {
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            if (type === 'register') {
+                loginForm.style.display = 'none';
+                registerForm.style.display = 'block';
+                document.title = "Đăng ký | Cứu Truyện";
+            } else {
+                loginForm.style.display = 'block';
+                registerForm.style.display = 'none';
+                document.title = "Đăng nhập | Cứu Truyện";
+            }
+        }
+
+        // Handle Login
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData);
+            
+            try {
+                const res = await window.ApiService.login(data.username, data.password);
+                localStorage.setItem('token', res.token);
+                localStorage.setItem('user', JSON.stringify(res));
+                window.location.href='../index.html';
+            } catch (err) {
+                alert('Đăng nhập thất bại: ' + (err.message || 'Lỗi kết nối'));
+            }
+        });
+
+        // Handle Register
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData);
+            
+            try {
+                await window.ApiService.register(data);
+                alert('Đăng ký thành công! Hãy đăng nhập để tiếp tục.');
+                toggleAuth('login');
+            } catch (err) {
+                alert('Đăng ký thất bại: ' + (err.message || 'Lỗi đã xảy ra'));
+            }
+        });
+    </script>
+</body>
+</html>

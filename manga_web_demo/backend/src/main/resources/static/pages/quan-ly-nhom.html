@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1200">
+    <meta name="description" content="Cứu Truyện - Quản Lý Nhóm">
+    <title>Cứu Truyện - Quản Lý Nhóm</title>
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <style>
+        body {
+            background-color: var(--primary-bg);
+        }
+
+        .dashboard-card {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        .nav-tabs .nav-link {
+            color: #7a6e67;
+            font-weight: 600;
+            padding: 1rem 1.5rem;
+            border: none;
+            border-bottom: 3px solid transparent;
+        }
+
+        .nav-tabs .nav-link.active {
+            color: #f7a928;
+            border-bottom: 3px solid #f7a928;
+            background-color: transparent;
+        }
+
+        .nav-tabs .nav-link:hover:not(.active) {
+            border-color: #dcd4cc;
+        }
+
+        .table-custom th {
+            background-color: #f8f9fa;
+            color: #5c514b;
+            font-weight: 700;
+            padding: 1rem;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .table-custom td {
+            vertical-align: middle;
+            color: #4a413b;
+            padding: 1rem;
+            border-bottom: 1px solid #f1f3f5;
+        }
+
+        .btn-action-icon {
+            width: 32px;
+            height: 32px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+            background: transparent;
+        }
+
+        .btn-edit {
+            color: #0d6efd;
+        }
+
+        .btn-edit:hover {
+            background-color: rgba(13, 110, 253, 0.1);
+            border-color: rgba(13, 110, 253, 0.2);
+        }
+
+        .btn-delete {
+            color: #dc3545;
+        }
+
+        .btn-delete:hover {
+            background-color: rgba(220, 53, 69, 0.1);
+            border-color: rgba(220, 53, 69, 0.2);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app-header"></div>
+
+    <main class="py-5">
+        <div class="container mx-auto" style="max-width: 1100px;">
+            <div class="d-flex justify-content-between align-items-end mb-4">
+                <div class="d-flex align-items-center">
+                    <div class="btn-user bg-dark d-flex align-items-center justify-content-center fw-bold fs-2 text-white me-3 shadow"
+                        style="width: 60px; height: 60px;" id="groupAvatar">?</div>
+                    <div>
+                        <h2 class="fw-bold fs-3 text-dark mb-1" id="groupTitle">Đang tải...</h2>
+                        <p class="text-secondary mb-0" id="groupSubtitle">Quản lý thành viên và truyện của nhóm</p>
+                    </div>
+                </div>
+                <button id="btnAddMemberMain" class="btn btn-dark fw-bold px-4 py-2 rounded-3 d-none" data-bs-toggle="modal"
+                    data-bs-target="#addMemberModal"><i class="fa-solid fa-user-plus me-2"></i> Thêm thành viên</button>
+            </div>
+
+            <div class="dashboard-card">
+                <!-- Nav tabs -->
+                <ul class="nav nav-tabs border-bottom" id="groupTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="members-tab" data-bs-toggle="tab" data-bs-target="#members"
+                            type="button" role="tab">Danh sách thành viên</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="mangas-tab" data-bs-toggle="tab" data-bs-target="#mangas"
+                            type="button" role="tab">Truyện đang thầu</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="approval-tab" data-bs-toggle="tab" data-bs-target="#approval"
+                            type="button" role="tab">Duyệt truyện <span class="badge rounded-pill bg-danger ms-1"
+                                id="pendingBadge">0</span></button>
+                    </li>
+                </ul>
+
+                <!-- Tab panes -->
+                <div class="tab-content" id="groupTabsContent">
+                    <!-- Tab Members -->
+                    <div class="tab-pane fade show active p-0" id="members" role="tabpanel" tabindex="0">
+                        <div class="table-responsive">
+                            <table class="table table-custom mb-0">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 5%">#</th>
+                                        <th style="width: 35%">Người dùng</th>
+                                        <th style="width: 25%">Vai trò</th>
+                                        <th style="width: 20%">Ngày tham gia</th>
+                                        <th style="width: 15%" class="text-end">Hành động</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="membersTbody">
+                                    <!-- JS sẽ render thành viên thực -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Tab Mangas -->
+                    <div class="tab-pane fade p-0" id="mangas" role="tabpanel" tabindex="0">
+                        <div class="table-responsive">
+                            <table class="table table-custom mb-0">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 5%">#</th>
+                                        <th style="width: 45%">Truyện</th>
+                                        <th style="width: 15%">Trạng thái</th>
+                                        <th style="width: 20%">Cập nhật lần cuối</th>
+                                        <th style="width: 15%" class="text-end">Hành động</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="mangaGroupTableBody">
+                                    <tr>
+                                        <td colspan="5" class="text-center text-muted">Đang tải dữ liệu...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Tab Approval -->
+                    <div class="tab-pane fade p-0" id="approval" role="tabpanel" tabindex="0">
+                        <div class="table-responsive">
+                            <table class="table table-custom mb-0">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 5%">#</th>
+                                        <th style="width: 35%">Truyện gửi lên</th>
+                                        <th style="width: 20%">Người gửi</th>
+                                        <th style="width: 15%">Ngày gửi</th>
+                                        <th style="width: 25%" class="text-end">Thao tác duyệt</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="groupApprovalTbody">
+                                    <!-- JS sẽ render dữ liệu thực từ DB -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modals Quản Lý -->
+    <!-- Modal Thêm Thành Viên -->
+    <div class="modal fade" id="addMemberModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header border-bottom px-4 py-3">
+                    <h5 class="fw-bold mb-0">Thêm thành viên mới</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label text-secondary small fw-bold">NHẬP ID TÀI KHOẢN</label>
+                        <input type="text" class="form-control" id="newMemberId" placeholder="Ví dụ: 12345">
+                        <div class="form-text">Nhập ID của người dùng bạn muốn thêm vào nhóm.</div>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label text-secondary small fw-bold">VAI TRÒ TRONG NHÓM</label>
+                        <select class="form-select border-2" id="newMemberRole">
+                            <option value="2">Dịch giả</option>
+                            <option value="4">Uploader</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer border-top px-4 py-3">
+                    <button type="button" class="btn btn-light fw-bold px-4" data-bs-dismiss="modal">HỦY BỎ</button>
+                    <button type="button" class="btn btn-dark fw-bold px-4" id="btnConfirmAddMember">THÊM VÀO
+                        NHÓM</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Sửa Thành Viên -->
+    <div class="modal fade" id="editMemberModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-sm modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="fw-bold mb-0">Sửa vai trò</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label text-secondary small fw-bold text-uppercase">Chọn chức vụ mới</label>
+                        <select class="form-select border-2">
+                            <option value="1">Trưởng nhóm</option>
+                            <option value="2">Dịch giả</option>
+                            <option value="4">Uploader</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-dark w-100 py-2 fw-bold rounded-3 mt-2">CẬP NHẬT</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Sửa Truyện -->
+    <div class="modal fade" id="editMangaModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header border-bottom px-4 py-3">
+                    <h5 class="fw-bold mb-0">Cấu hình thông tin truyện</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="row g-3">
+                        <div class="col-8">
+                            <div class="mb-3">
+                                <label class="form-label text-secondary small fw-bold">TÊN TRUYỆN</label>
+                                <input type="text" class="form-control" value="Ma Vương Đại Nhân Tập Sự">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-secondary small fw-bold">TÁC GIẢ</label>
+                                <input type="text" class="form-control" value="Oda Eiichiro">
+                            </div>
+                            <div class="mb-0">
+                                <label class="form-label text-secondary small fw-bold">TÓM TẮT</label>
+                                <textarea class="form-control" rows="4">Mô tả cũ của truyện...</textarea>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <label class="form-label text-secondary small fw-bold">ẢNH BÌA</label>
+                            <div class="border rounded-3 p-2 text-center bg-light">
+                                <img id="editMangaPreview" src=""
+                                    class="img-fluid rounded border mb-2 d-none">
+                                <div id="editMangaNoCover" class="bg-secondary text-white rounded border mb-2 d-flex align-items-center justify-content-center" style="aspect-ratio: 150/210; font-size: 0.8rem;">No Cover</div>
+                                <button class="btn btn-sm btn-outline-secondary w-100">Thay ảnh</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-top px-4 py-3">
+                    <button type="button" class="btn btn-light fw-bold px-4" data-bs-dismiss="modal">HỦY BỎ</button>
+                    <button type="button" class="btn btn-dark fw-bold px-4">LƯU THAY ĐỔI</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Xác nhận Xoá -->
+    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-sm modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-body p-4 text-center">
+                    <i class="fa-solid fa-triangle-exclamation text-danger display-4 mb-3"></i>
+                    <h5 class="fw-bold mb-2">Bạn có chắc chắn?</h5>
+                    <p class="text-secondary small mb-4">Hành động này không thể hoàn tác. Dữ liệu sẽ bị xóa vĩnh viễn
+                        khỏi nhóm.</p>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-light flex-fill fw-bold py-2"
+                            data-bs-dismiss="modal">KHÔNG</button>
+                        <button type="button" class="btn btn-danger flex-fill fw-bold py-2">XÁC NHẬN XOÁ</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Sửa Vai Trò -->
+    <div class="modal fade" id="editRoleModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-warning text-white border-0">
+                    <h5 class="modal-title fw-bold">Sửa Vai Trò Thành Viên</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-secondary small text-uppercase">Thành viên</label>
+                        <input type="text" id="editRoleUserName" class="form-control bg-light fw-bold" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-secondary small text-uppercase">Chọn vai trò mới</label>
+                        <select id="editRoleSelect" class="form-select border-2">
+                            <option value="translator">Dịch giả</option>
+                            <option value="uploader">Uploader</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-light fw-bold px-4" data-bs-dismiss="modal">HỦY</button>
+                    <button type="button" id="btnConfirmEditRole" class="btn btn-warning fw-bold text-white px-4">LƯU THAY ĐỔI</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Overlay -->
+    <div id="searchOverlay" class="search-overlay d-none">
+        <div class="search-overlay-content container mx-auto" style="max-width: 800px; padding-top: 100px;">
+            <div class="position-relative">
+                <input type="text" id="liveSearchInput"
+                    class="form-control form-control-lg py-3 px-4 rounded-3 shadow-sm"
+                    style="font-size: 1.15rem; border: 2px solid #a2bdf8;" placeholder="Tìm kiếm...">
+                <div class="d-flex justify-content-end mt-2">
+                    <a href="search.html" class="text-secondary fw-bold text-decoration-none"
+                        style="font-size: 0.85rem;">Tìm kiếm nâng cao</a>
+                </div>
+            </div>
+            <div id="searchResults"
+                class="search-results-dropdown bg-white rounded-3 shadow-lg mt-3 overflow-hidden d-none">
+                <div class="list-group list-group-flush" id="searchResultList"></div>
+                <div class="bg-light p-3 border-top pb-2">
+                    <a href="search.html" class="text-secondary text-decoration-none fw-bold"
+                        style="font-size: 0.85rem;" id="searchAllText">Tìm tất cả kết quả cho từ khóa</a>
+                </div>
+            </div>
+        </div>
+        <button id="closeSearchBtn" class="btn text-secondary position-absolute top-0 end-0 m-4 fs-2 border-0"><i
+                class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/js/api.js"></script>
+    <script src="../assets/js/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const formatDate = (iso) => {
+                if (!iso) return 'N/A';
+                return new Date(iso).toLocaleString('vi-VN');
+            };
+
+            const getImageUrl = (url) => {
+                if (!url) return null;
+                if (window.getImageUrl) return window.getImageUrl(url);
+                if (url.startsWith('http')) return url;
+                const serverUrl = (typeof API_CONFIG !== 'undefined' && API_CONFIG.BASE_URL) ? API_CONFIG.BASE_URL.replace('/api', '') : 'http://localhost:8080';
+                return serverUrl + (url.startsWith('/') ? url : '/' + url);
+            };
+
+            // ==== LOAD NHÓM CỦA USER HOẶC THEO PARAM ====
+            const urlParams = new URLSearchParams(window.location.search);
+            const viewGroupId = urlParams.get('groupId');
+            let currentGroup = null;
+            let myGroupId = null;
+
+            window.loadGroupData = async () => {
+                const groupTitle = document.getElementById('groupTitle');
+                const groupAvatar = document.getElementById('groupAvatar');
+                const groupSubtitle = document.getElementById('groupSubtitle');
+
+                try {
+                    if (viewGroupId) {
+                        currentGroup = await ApiService.getGroupInfo(viewGroupId);
+                    } else {
+                        currentGroup = await ApiService.getMyGroup();
+                    }
+
+                    if (currentGroup && currentGroup.name) {
+                        myGroupId = currentGroup.groupId;
+                        groupTitle.textContent = 'Nhóm Dịch: ' + currentGroup.name;
+                        groupAvatar.textContent = currentGroup.name.charAt(0).toUpperCase();
+                        groupSubtitle.textContent = `Trưởng nhóm: ${currentGroup.leader ? currentGroup.leader.username : 'N/A'} • Trạng thái: ${currentGroup.status}`;
+                        
+                        // Render thành viên nhóm
+                        const membersTbody = document.getElementById('membersTbody');
+                        if (membersTbody && currentGroup.groupId) {
+                            try {
+                                const membersList = await ApiService.getGroupMembers(currentGroup.groupId);
+                                
+                                // Kiểm tra quyền của user đang đăng nhập
+                                const loggedInUser = JSON.parse(localStorage.getItem('user'));
+                                const isCurrentUserLeader = currentGroup.leader && loggedInUser && currentGroup.leader.username === loggedInUser.username;
+                                const isCurrentUserAdmin = loggedInUser && loggedInUser.role === 'admin';
+                                const canManageMembers = isCurrentUserLeader || isCurrentUserAdmin;
+
+                                // Hiện/ẩn nút thêm thành viên
+                                const btnAddMemberMain = document.getElementById('btnAddMemberMain');
+                                if (btnAddMemberMain) {
+                                    if (canManageMembers) btnAddMemberMain.classList.remove('d-none');
+                                    else btnAddMemberMain.classList.add('d-none');
+                                }
+
+                                if (membersList.length > 0) {
+                                    membersTbody.innerHTML = membersList.map((m, index) => {
+                                        const initial = m.username.charAt(0).toUpperCase();
+                                        const isMemberLeader = currentGroup.leader && currentGroup.leader.userId === m.userId;
+                                        
+                                        let roleName = 'Thành viên';
+                                        if (isMemberLeader) roleName = 'Trưởng nhóm';
+                                        else if (m.role === 'translator') roleName = 'Dịch giả';
+                                        else if (m.role === 'uploader') roleName = 'Uploader';
+                                        
+                                        const roleBadge = isMemberLeader ? 'bg-danger' : 'bg-primary';
+                                        const joinDate = formatDate(m.createdAt);
+                                        
+                                        return `
+                                            <tr>
+                                                <td>${index + 1}</td>
+                                                <td>
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        <div class="btn-circular bg-primary text-white" style="width: 32px; height: 32px; font-size: 0.8rem;">${initial}</div>
+                                                        <span class="fw-bold fs-6">${m.displayName || m.username}</span>
+                                                    </div>
+                                                </td>
+                                                <td><span class="badge ${roleBadge}">${roleName}</span></td>
+                                                <td class="small text-muted">${joinDate}</td>
+                                                <td class="text-end">
+                                                    ${(isMemberLeader || !canManageMembers) ? '<span class="text-muted small">—</span>' : `
+                                                        <div class="d-flex justify-content-end gap-2">
+                                                            <button class="btn btn-sm btn-outline-warning btn-edit-member" data-id="${m.userId}" data-username="${m.username}" data-role="${m.role}" title="Sửa vai trò"><i class="fa-solid fa-user-pen"></i></button>
+                                                            <button class="btn btn-sm btn-outline-danger btn-delete-member" data-id="${m.userId}" title="Xóa khỏi nhóm"><i class="fa-solid fa-user-minus"></i></button>
+                                                        </div>
+                                                    `}
+                                                </td>
+                                            </tr>
+                                        `;
+                                    }).join('');
+                                } else {
+                                    membersTbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-muted">Không có thành viên</td></tr>';
+                                }
+                            } catch (err) {
+                                console.error("Lỗi lấy danh sách thành viên", err);
+                            }
+                        }
+
+                        // Render danh sách truyện
+                        const tableBody = document.getElementById('mangaGroupTableBody');
+                        if (tableBody) {
+                            try {
+                                const mangas = await ApiService.getMangasByGroup(currentGroup.groupId);
+                                const approvedMangas = mangas.filter(m => !m.approvalStatus || m.approvalStatus === 'approved');
+                                if (approvedMangas.length > 0) {
+                                    tableBody.innerHTML = approvedMangas.map((m, idx) => `
+                                        <tr>
+                                            <td>${idx + 1}</td>
+                                            <td>
+                                                <div class="d-flex align-items-center gap-3">
+                                                    <img src="${getImageUrl(m.coverUrl) || ''}" width="40" height="56" alt="cover" class="rounded border object-fit-cover" style="background-color: #f0f0f0;">
+                                                    <a href="chi-tiet-truyen.html?id=${m.seriesId}" class="fw-bold text-dark text-decoration-none">${m.title}</a>
+                                                </div>
+                                            </td>
+                                            <td>${m.status || 'ongoing'}</td>
+                                            <td class="small text-muted">${formatDate(m.updatedAt)}</td>
+                                            <td class="text-end">
+                                                <div class="d-flex justify-content-end align-items-center gap-2">
+                                                    <a href="dang-truyen.html?edit=${m.seriesId}" class="btn btn-sm btn-outline-primary fw-bold px-3"><i class="fa-solid fa-pen me-1"></i>Sửa</a>
+                                                    <button class="btn btn-sm btn-outline-danger fw-bold px-3 btn-delete-manga" data-id="${m.seriesId}"><i class="fa-solid fa-trash me-1"></i>Xóa</button>
+                                                    <button class="btn btn-sm btn-dark fw-bold px-3 btn-post-chap" data-id="${m.seriesId}">Đăng Chap</button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    `).join('');
+                                } else {
+                                    tableBody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">Chưa có truyện nào đã duyệt</td></tr>';
+                                }
+                            } catch (error) {
+                                console.error("Failed to load mangas", error);
+                                tableBody.innerHTML = '<tr><td colspan="5" class="text-center text-danger">Lỗi khi tải dữ liệu!</td></tr>';
+                            }
+                        }
+                    } else {
+                        groupTitle.textContent = 'Chưa có nhóm dịch';
+                        groupAvatar.textContent = '?';
+                        groupSubtitle.textContent = 'Bạn chưa tạo hoặc chưa được duyệt nhóm dịch nào';
+                        const membersTbody = document.getElementById('membersTbody');
+                        if (membersTbody) membersTbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-muted">Không có thành viên</td></tr>';
+                    }
+                } catch (err) {
+                    console.error('Lỗi load nhóm:', err);
+                    groupTitle.textContent = 'Lỗi tải nhóm';
+                }
+            };
+
+            // Initial load
+            await loadGroupData();
+
+            // Event listener for manga actions in bidding table
+            const tableBody = document.getElementById('mangaGroupTableBody');
+            if (tableBody) {
+                tableBody.addEventListener('click', async (e) => {
+                    const deleteBtn = e.target.closest('.btn-delete-manga');
+                    const postChapBtn = e.target.closest('.btn-post-chap');
+
+                    if (deleteBtn) {
+                        const id = deleteBtn.getAttribute('data-id');
+                        if (confirm('Bạn có chắc chắn muốn xóa truyện này? Hành động này không thể hoàn tác.')) {
+                            try {
+                                deleteBtn.disabled = true;
+                                await ApiService.deleteManga(id);
+                                alert('Đã xóa truyện thành công!');
+                                loadGroupData();
+                            } catch (err) {
+                                alert('Lỗi: ' + err.message);
+                                deleteBtn.disabled = false;
+                            }
+                        }
+                    }
+
+                    if (postChapBtn) {
+                        const id = postChapBtn.getAttribute('data-id');
+                        window.location.href = `dang-truyen.html?mangaId=${id}&type=chapter`;
+                    }
+                });
+            }
+
+            // ==== DUYỆT TRUYỆN (pending) ====
+            const groupApprovalTbody = document.getElementById('groupApprovalTbody');
+            const pendingBadge = document.getElementById('pendingBadge');
+
+            const loadPendingManga = async () => {
+                if (!currentGroup) {
+                    groupApprovalTbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-muted">Bạn chưa tham gia nhóm dịch nào</td></tr>';
+                    if (pendingBadge) pendingBadge.textContent = '0';
+                    return;
+                }
+                try {
+                    const pendingManga = await ApiService.getPendingMangasByGroup(currentGroup.groupId);
+                    if (pendingBadge) pendingBadge.textContent = pendingManga.length;
+                    if (pendingManga.length === 0) {
+                        groupApprovalTbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-muted">Không có truyện nào chờ duyệt</td></tr>';
+                    } else {
+                        groupApprovalTbody.innerHTML = pendingManga.map((m, idx) => `
+                            <tr>
+                                <td>${idx + 1}</td>
+                                <td>
+                                    <div class="fw-bold text-dark">${m.title}</div>
+                                    <small class="text-muted">${m.alternativeTitle || ''}</small>
+                                </td>
+                                <td>${m.uploadedBy ? m.uploadedBy.username : 'N/A'}</td>
+                                <td class="small text-muted">${formatDate(m.createdAt)}</td>
+                                <td class="text-end">
+                                    <button class="btn btn-sm btn-success fw-bold px-3 btn-approve-manga" data-id="${m.seriesId}">DUYỆT</button>
+                                    <button class="btn btn-sm btn-outline-danger fw-bold ms-1 btn-reject-manga" data-id="${m.seriesId}">TỪ CHỐI</button>
+                                </td>
+                            </tr>
+                        `).join('');
+                    }
+                } catch (err) {
+                    groupApprovalTbody.innerHTML = '<tr><td colspan="5" class="text-danger text-center">Lỗi tải dữ liệu</td></tr>';
+                }
+            };
+            await loadPendingManga();
+
+            groupApprovalTbody.addEventListener('click', async (e) => {
+                const approveBtn = e.target.closest('.btn-approve-manga');
+                const rejectBtn = e.target.closest('.btn-reject-manga');
+                if (approveBtn || rejectBtn) {
+                    const btn = approveBtn || rejectBtn;
+                    const id = btn.getAttribute('data-id');
+                    try {
+                        btn.disabled = true;
+                        if (approveBtn) {
+                            await ApiService.approveManga(id);
+                            alert('Đã duyệt truyện thành công! Truyện đã chuyển vào mục Truyện đang thầu.');
+                        } else {
+                            await ApiService.rejectManga(id);
+                            alert('Đã từ chối truyện!');
+                        }
+                        await loadPendingManga();
+                        location.reload(); // Reload to update manga list
+                    } catch (err) {
+                        alert("Lỗi: " + err.message);
+                        btn.disabled = false;
+                    }
+                }
+            });
+
+
+
+            // ==== QUẢN LÝ THÀNH VIÊN ====
+            const membersTbody = document.getElementById('membersTbody');
+            const editRoleModalEl = document.getElementById('editRoleModal');
+            const editRoleModal = editRoleModalEl ? new bootstrap.Modal(editRoleModalEl) : null;
+            let currentEditingMemberId = null;
+
+            if (membersTbody) {
+                membersTbody.addEventListener('click', async (e) => {
+                    const deleteBtn = e.target.closest('.btn-delete-member');
+                    const editBtn = e.target.closest('.btn-edit-member');
+
+                    if (deleteBtn) {
+                        const userId = deleteBtn.getAttribute('data-id');
+                        if (confirm('Bạn có chắc muốn xóa thành viên này khỏi nhóm?')) {
+                            try {
+                                await ApiService.deleteGroupMember(myGroupId, userId);
+                                alert('Đã xóa thành viên!');
+                                loadGroupData();
+                            } catch (err) {
+                                alert('Lỗi: ' + err.message);
+                            }
+                        }
+                    }
+
+                    if (editBtn && editRoleModal) {
+                        currentEditingMemberId = editBtn.getAttribute('data-id');
+                        const savedRole = (editBtn.getAttribute('data-role') || 'translator').toLowerCase();
+                        document.getElementById('editRoleUserName').value = editBtn.getAttribute('data-username');
+                        document.getElementById('editRoleSelect').value = savedRole;
+                        editRoleModal.show();
+                    }
+                });
+            }
+
+            const btnConfirmEditRole = document.getElementById('btnConfirmEditRole');
+            if (btnConfirmEditRole) {
+                btnConfirmEditRole.addEventListener('click', async () => {
+                    const newRole = document.getElementById('editRoleSelect').value;
+                    try {
+                        await ApiService.addMemberToGroup(myGroupId, currentEditingMemberId, newRole);
+                        alert('Cập nhật vai trò thành công!');
+                        if (editRoleModal) editRoleModal.hide();
+                        loadGroupData();
+                    } catch (err) {
+                        alert('Lỗi: ' + err.message);
+                    }
+                });
+            }
+
+            const btnConfirmAddMember = document.getElementById('btnConfirmAddMember');
+            if (btnConfirmAddMember) {
+                btnConfirmAddMember.addEventListener('click', async () => {
+                    const memberId = document.getElementById('newMemberId').value;
+                    const memberRole = document.getElementById('newMemberRole').value;
+
+                    if (!memberId) {
+                        alert("Vui lòng nhập ID tài khoản!");
+                        return;
+                    }
+
+                    try {
+                        let roleStr = 'translator';
+                        if (memberRole === '3') roleStr = 'editor';
+                        if (memberRole === '4') roleStr = 'uploader';
+
+                        btnConfirmAddMember.disabled = true;
+                        await ApiService.addMemberToGroup(myGroupId, memberId, roleStr);
+
+                        alert(`Đã thêm tài khoản ID: ${memberId} vào nhóm thành công!`);
+                        document.getElementById('newMemberId').value = '';
+
+                        const modalEl = document.getElementById('addMemberModal');
+                        const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+                        modal.hide();
+                        
+                        loadGroupData();
+                    } catch (error) {
+                        alert("Lỗi khi thêm thành viên: " + error.message);
+                    } finally {
+                        btnConfirmAddMember.disabled = false;
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>

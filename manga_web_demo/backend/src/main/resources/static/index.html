@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1200">
+    <meta name="description" content="Cứu Truyện - Trang đọc truyện tranh thư giãn">
+    <title>Cứu Truyện - Trang chủ</title>
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <!-- SwiperJS CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/chat.css">
+    <link rel="stylesheet" href="assets/css/navbar.css">
+</head>
+
+<body>
+
+    <!-- Dynamic Navbar -->
+    <div id="dyn-navbar-container"></div>
+
+    <!-- Legacy Header (ẩn - giữ lại auth modals) -->
+    <div id="app-header" style="display:none"></div>
+
+    <main class="py-4">
+        <div class="container-fluid px-5 mx-auto" style="max-width: 1400px;">
+            <section class="hero-carousel-section mb-5 position-relative">
+                <div class="swiper heroSwiper rounded-4 overflow-hidden shadow-sm">
+                    <div class="swiper-wrapper">
+                        <!-- Slides injected by JS -->
+                        <div class="swiper-slide">
+                            <div class="hero-slide-content" style="height: 500px; background: #eee;"></div>
+                        </div>
+                    </div>
+                    <div class="swiper-pagination"></div>
+                </div>
+            </section>
+
+            <section class="recently-updated-section mb-5 position-relative">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="fw-bold fs-5 text-uppercase text-secondary section-title">MỚI CẬP NHẬT</h4>
+                </div>
+                <div class="swiper updatedSwiper pb-2">
+                    <div class="swiper-wrapper" id="updatedMangaList">
+                        <!-- Manga cards injected by JS -->
+                    </div>
+                    <div class="swiper-button-next text-secondary custom-swiper-nav shadow-sm bg-light rounded-circle">
+                    </div>
+                </div>
+                <div class="d-flex justify-content-end mt-3">
+                    <a href="pages/truyen-moi.html" class="text-secondary fw-bold text-decoration-none"
+                        style="font-size: 0.9rem;">
+                        TẤT CẢ TRUYỆN <i class="fa-solid fa-chevron-right ms-1" style="font-size: 0.8rem;"></i>
+                    </a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <div id="searchOverlay" class="search-overlay d-none">
+        <div class="search-overlay-content container mx-auto" style="max-width: 800px; padding-top: 100px;">
+            <div class="position-relative">
+                <input type="text" id="liveSearchInput"
+                    class="form-control form-control-lg py-3 px-4 rounded-3 shadow-sm"
+                    style="font-size: 1.15rem; border: 2px solid #a2bdf8;" placeholder="Tìm kiếm...">
+                <div class="d-flex justify-content-end mt-2">
+                    <a href="pages/search.html" class="text-secondary fw-bold text-decoration-none"
+                        style="font-size: 0.85rem;">Tìm kiếm nâng cao</a>
+                </div>
+            </div>
+            <div id="searchResults"
+                class="search-results-dropdown bg-white rounded-3 shadow-lg mt-3 overflow-hidden d-none">
+                <div class="list-group list-group-flush" id="searchResultList"></div>
+                <div class="bg-light p-3 border-top pb-2">
+                    <a href="pages/search.html" class="text-secondary text-decoration-none fw-bold"
+                        style="font-size: 0.85rem;" id="searchAllText">Tìm tất cả kết quả cho từ khóa</a>
+                </div>
+            </div>
+        </div>
+        <button id="closeSearchBtn" class="btn text-secondary position-absolute top-0 end-0 m-4 fs-2 border-0"><i
+                class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/navbar.js"></script>
+    <script src="assets/js/chat.js"></script>
+    <script src="assets/js/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const heroWrapper = document.querySelector('.heroSwiper .swiper-wrapper');
+            const updatedWrapper = document.querySelector('.updatedSwiper .swiper-wrapper');
+
+            try {
+                const mangas = await ApiService.getMangas();
+                const topViewsMangas = await ApiService.getTopViewsMangas(3);
+
+                // Banner - Top 3 đọc nhiều nhất trong 24h
+                const bannerMangas = topViewsMangas && topViewsMangas.length > 0 ? topViewsMangas : mangas.slice(0, 3);
+                heroWrapper.innerHTML = bannerMangas.map((m, idx) => `
+                    <div class="swiper-slide">
+                        <div class="hero-slide-content position-relative" style="background-image: url('${getImageUrl(m.coverUrl) || ''}'); background-color: #f0f0f0;">
+                            <div class="hero-overlay"></div>
+                            <div class="hero-info position-absolute bottom-0 start-0 p-5 text-white w-100">
+                                <span class="badge bg-danger mb-2 p-2 px-3 fw-bold"><i class="fa-solid fa-fire me-1"></i> TOP ${idx + 1} ĐỌC NHIỀU NHẤT TRONG 24H</span>
+                                <h2 class="fw-bold mb-3 fs-3">${m.title}</h2>
+                                <p class="mb-4 text-white-50 lh-lg" style="max-width: 70%">${m.description || ''}</p>
+                                <button class="btn btn-warning px-4 py-2 fw-bold" onclick="window.location.href='pages/chi-tiet-truyen.html?id=${m.seriesId}'">XEM THÔNG TIN</button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+
+                // Updated
+                updatedWrapper.innerHTML = mangas.map(m => `
+                    <div class="swiper-slide">
+                        <div class="manga-card h-100">
+                            <div class="card border-0 bg-transparent h-100">
+                                <div class="manga-cover rounded-3 overflow-hidden shadow-sm mb-2" style="aspect-ratio: 3/4">
+                                    <a href="pages/chi-tiet-truyen.html?id=${m.seriesId}">
+                                        <img src="${getImageUrl(m.coverUrl) || ''}" class="w-100 h-100 object-fit-cover" loading="lazy" style="background-color: #f0f0f0;">
+                                    </a>
+                                </div>
+                                <h6 class="fw-bold text-truncate mb-1"><a href="pages/chi-tiet-truyen.html?id=${m.seriesId}" class="text-dark text-decoration-none">${m.title}</a></h6>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+
+                initSwipers();
+            } catch (err) {
+                console.error("Home load error:", err);
+            }
+        });
+    </script>
+</body>
+
+</html>

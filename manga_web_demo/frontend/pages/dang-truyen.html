@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1200">
+    <meta name="description" content="Cứu Truyện - Đăng Truyện">
+    <title>Cứu Truyện - Đăng Truyện</title>
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <style>
+        body {
+            background-color: var(--primary-bg);
+        }
+
+        .upload-card {
+            background-color: rgba(255, 255, 255, 0.85);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .drop-zone {
+            border: 2px dashed #a2bdf8;
+            border-radius: 12px;
+            background-color: #f8fafe;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .drop-zone:hover {
+            background-color: #ebf1fe;
+            border-color: #6a95f3;
+        }
+
+        .drop-zone-icon {
+            font-size: 3rem;
+            color: #6a95f3;
+        }
+
+        .custom-input {
+            background-color: rgba(255, 255, 255, 0.6);
+            border: 1px solid #dcd4cc;
+        }
+
+        .custom-input:focus {
+            border-color: #f7a928;
+            box-shadow: 0 0 0 0.25rem rgba(247, 169, 40, 0.25);
+            background-color: #fff;
+        }
+
+        .form-check-input:checked {
+            background-color: #f7a928;
+            border-color: #f7a928;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Bắt đầu Header -->
+    <div id="app-header"></div>
+
+    <main class="py-5">
+        <div class="container mx-auto" style="max-width: 1000px;">
+            <div class="d-flex align-items-center mb-4">
+                <i class="fa-solid fa-cloud-arrow-up fs-2 me-3" style="color: #f7a928;"></i>
+                <h2 class="fw-bold fs-3 text-dark mb-0" id="formTitle">Đăng Truyện Mới</h2>
+            </div>
+
+            <div class="upload-card p-5">
+                <form id="uploadMangaForm">
+                    <div class="row g-5">
+                        <!-- Main Column -->
+                        <div id="mainFormColumn" class="col-7">
+                            <h5 class="fw-bold mb-4 border-bottom pb-2">Thông tin cơ bản</h5>
+
+                            <div class="mb-4">
+                                <label class="form-label fw-bold text-secondary">Tên truyện <span
+                                        class="text-danger">*</span></label>
+                                <input type="text" id="mangaTitle" class="form-control form-control-lg custom-input"
+                                    placeholder="Nhập tên truyện...">
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label fw-bold text-secondary">Tên gọi khác (Alt name)</label>
+                                <input type="text" id="mangaAltTitle" class="form-control form-control-lg custom-input"
+                                    placeholder="Tên rườm rà, tên tiếng Anh...">
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label fw-bold text-secondary">Tác giả <span
+                                        class="text-danger">*</span></label>
+                                <input type="text" id="mangaAuthor" class="form-control form-control-lg custom-input"
+                                    placeholder="Tên tác giả...">
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label fw-bold text-secondary">Kiểu truyện <span
+                                        class="text-danger">*</span></label>
+                                <select id="mangaType" class="form-select form-select-lg custom-input">
+                                    <option value="manga">Manga</option>
+                                    <option value="manhwa">Manhwa</option>
+                                    <option value="manhua">Manhua</option>
+                                    <option value="comic">Comic</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-4 d-none" id="statusGroup">
+                                <label class="form-label fw-bold text-secondary">Trạng thái truyện <span
+                                        class="text-danger">*</span></label>
+                                <select id="mangaStatus" class="form-select form-select-lg custom-input">
+                                    <option value="ongoing">Đang tiến hành (Ongoing)</option>
+                                    <option value="completed">Đã hoàn thành (Completed)</option>
+                                    <option value="hiatus">Tạm ngưng (Hiatus)</option>
+                                    <option value="cancelled">Đã hủy (Cancelled)</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-4 d-none" id="editCoverGroup">
+                                <label class="form-label fw-bold text-secondary">Thay đổi ảnh bìa dọc (Avatar truyện)</label>
+                                <div class="mb-2">
+                                    <span class="text-muted small d-block mb-1">Ảnh bìa hiện tại:</span>
+                                    <img id="currentCoverPreview" src="" alt="Current Cover" class="img-thumbnail" style="max-height: 150px; display: none;">
+                                </div>
+                                <input type="file" id="mangaCoverFileEdit" class="form-control custom-input" accept="image/*">
+                            </div>
+
+                            <div class="mb-4 d-none" id="editBannerGroup">
+                                <label class="form-label fw-bold text-secondary">Thay đổi ảnh bìa ngang (Banner/Background)</label>
+                                <div class="mb-2">
+                                    <span class="text-muted small d-block mb-1">Banner hiện tại:</span>
+                                    <img id="currentBannerPreview" src="" alt="Current Banner" class="img-thumbnail" style="max-height: 150px; display: none;">
+                                </div>
+                                <input type="file" id="mangaBannerFileEdit" class="form-control custom-input" accept="image/*">
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label fw-bold text-secondary">Tóm tắt nội dung <span
+                                        class="text-danger">*</span></label>
+                                <textarea id="mangaDesc" class="form-control custom-input" rows="5"
+                                    placeholder="Viết mô tả hấp dẫn..."></textarea>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label fw-bold text-secondary mb-3">Thể loại (Genres)</label>
+                                <div class="row g-2">
+                                    <div class="col-4">
+                                        <div class="form-check"><input class="form-check-input genre-checkbox"
+                                                type="checkbox" value="Action" id="t1"><label class="form-check-label"
+                                                for="t1">Action</label></div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-check"><input class="form-check-input genre-checkbox"
+                                                type="checkbox" value="Adventure" id="t2"><label
+                                                class="form-check-label" for="t2">Adventure</label></div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-check"><input class="form-check-input genre-checkbox"
+                                                type="checkbox" value="Comedy" id="t3"><label class="form-check-label"
+                                                for="t3">Comedy</label></div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-check"><input class="form-check-input genre-checkbox"
+                                                type="checkbox" value="Drama" id="t4"><label class="form-check-label"
+                                                for="t4">Drama</label></div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-check"><input class="form-check-input genre-checkbox"
+                                                type="checkbox" value="Fantasy" id="t5"><label class="form-check-label"
+                                                for="t5">Fantasy</label></div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-check"><input class="form-check-input genre-checkbox"
+                                                type="checkbox" value="Horror" id="t6"><label class="form-check-label"
+                                                for="t6">Horror</label></div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-check"><input class="form-check-input genre-checkbox"
+                                                type="checkbox" value="Mystery" id="t7"><label class="form-check-label"
+                                                for="t7">Mystery</label></div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-check"><input class="form-check-input genre-checkbox"
+                                                type="checkbox" value="Romance" id="t8"><label class="form-check-label"
+                                                for="t8">Romance</label></div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-check"><input class="form-check-input genre-checkbox"
+                                                type="checkbox" value="Sci-Fi" id="t9"><label class="form-check-label"
+                                                for="t9">Sci-Fi</label></div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-check"><input class="form-check-input genre-checkbox"
+                                                type="checkbox" value="Slice of Life" id="t10"><label
+                                                class="form-check-label" for="t10">Slice of Life</label></div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-check"><input class="form-check-input genre-checkbox"
+                                                type="checkbox" value="Sports" id="t11"><label class="form-check-label"
+                                                for="t11">Sports</label></div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-check"><input class="form-check-input genre-checkbox"
+                                                type="checkbox" value="Supernatural" id="t12"><label
+                                                class="form-check-label" for="t12">Supernatural</label></div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-check"><input class="form-check-input genre-checkbox"
+                                                type="checkbox" value="Thriller" id="t13"><label
+                                                class="form-check-label" for="t13">Thriller</label></div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-check"><input class="form-check-input genre-checkbox"
+                                                type="checkbox" value="Isekai" id="t14"><label class="form-check-label"
+                                                for="t14">Isekai</label></div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-check"><input class="form-check-input genre-checkbox"
+                                                type="checkbox" value="Martial Arts" id="t15"><label
+                                                class="form-check-label" for="t15">Martial Arts</label></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-grid mt-5 d-none" id="editSubmitGroup">
+                                <button type="button" id="btnUpdateMangaOnly"
+                                    class="btn btn-dark btn-lg fw-bold rounded-4 py-3 shadow">CẬP NHẬT TRUYỆN</button>
+                            </div>
+                        </div>
+
+                        <!-- Right Column: Images & Chapters (Hidden in Edit mode) -->
+                        <div class="col-5" id="sideFormColumn">
+                            <h5 class="fw-bold mb-4 border-bottom pb-2">Hình ảnh & Chương</h5>
+
+                            <div class="mb-4 d-none" id="createCoverGroup">
+                                <label class="form-label fw-bold text-secondary">Ảnh bìa dọc (Avatar) <span
+                                        class="text-danger">*</span></label>
+                                <input type="file" id="mangaCoverFile" class="form-control mb-4 custom-input"
+                                    accept="image/*">
+
+                                <label class="form-label fw-bold text-secondary mt-3">Ảnh bìa ngang (Banner/Background) (Tùy chọn)</label>
+                                <input type="file" id="mangaBannerFile" class="form-control mb-4 custom-input" accept="image/*">
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label fw-bold text-secondary">Số chương (Chapter Number) <span
+                                        class="text-danger">*</span></label>
+                                <input type="number" id="chapterNumber" class="form-control custom-input" value="1"
+                                    step="0.1">
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label fw-bold text-secondary">Tên chương (Tùy chọn)</label>
+                                <input type="text" id="chapterTitle" class="form-control custom-input"
+                                    placeholder="Ví dụ: Khởi đầu mới">
+                            </div>
+
+                            <label class="form-label fw-bold text-secondary">Chọn Folder ảnh chương</label>
+                            <input type="file" id="folderInput" webkitdirectory directory multiple class="d-none">
+                            <div class="drop-zone p-4 mb-4" id="folderDropZone"
+                                style="border-color: #dcd4cc; background-color: rgba(255,255,255,0.5);">
+                                <i class="fa-solid fa-file-arrow-up drop-zone-icon mb-2" style="color: #bfa897;"></i>
+                                <h6 class="fw-bold text-dark" id="dropZoneText">Chọn folder / Tải ảnh lên</h6>
+                                <p class="text-muted small mb-0" id="fileCountText">Hỗ trợ chọn toàn bộ thư mục</p>
+                            </div>
+
+                            <div id="chapterSection">
+                                <h5 class="fw-bold mb-4 mt-5 border-bottom pb-2"></h5>
+                            </div>
+
+                            <div class="d-grid mt-5">
+                                <button type="button" id="btnUploadManga"
+                                    class="btn btn-dark btn-lg fw-bold rounded-4 py-3 shadow">ĐĂNG TRUYỆN</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- Search Overlay -->
+    <div id="searchOverlay" class="search-overlay d-none">
+        <div class="search-overlay-content container mx-auto" style="max-width: 800px; padding-top: 100px;">
+            <div class="position-relative">
+                <input type="text" id="liveSearchInput"
+                    class="form-control form-control-lg py-3 px-4 rounded-3 shadow-sm"
+                    style="font-size: 1.15rem; border: 2px solid #a2bdf8;" placeholder="Tìm kiếm...">
+                <div class="d-flex justify-content-end mt-2">
+                    <a href="search.html" class="text-secondary fw-bold text-decoration-none"
+                        style="font-size: 0.85rem;">Tìm kiếm nâng cao</a>
+                </div>
+            </div>
+            <div id="searchResults"
+                class="search-results-dropdown bg-white rounded-3 shadow-lg mt-3 overflow-hidden d-none">
+                <div class="list-group list-group-flush" id="searchResultList"></div>
+                <div class="bg-light p-3 border-top pb-2">
+                    <a href="search.html" class="text-secondary text-decoration-none fw-bold"
+                        style="font-size: 0.85rem;" id="searchAllText">Tìm tất cả kết quả cho từ khóa</a>
+                </div>
+            </div>
+        </div>
+        <button id="closeSearchBtn" class="btn text-secondary position-absolute top-0 end-0 m-4 fs-2 border-0"><i
+                class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/js/api.js"></script>
+    <script src="../assets/js/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const btnUpload = document.getElementById('btnUploadManga');
+            const btnUpdateOnly = document.getElementById('btnUpdateMangaOnly');
+            const folderInput = document.getElementById('folderInput');
+            const folderDropZone = document.getElementById('folderDropZone');
+            const dropZoneText = document.getElementById('dropZoneText');
+            const fileCountText = document.getElementById('fileCountText');
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const editId = urlParams.get('edit');
+            const mangaId = urlParams.get('mangaId');
+            const type = urlParams.get('type');
+
+            let selectedFiles = [];
+
+            // Layout Adjustment & Mode Setup
+            if (editId) {
+                document.getElementById('formTitle').textContent = "Sửa Thông Tin Truyện";
+                document.getElementById('mainFormColumn').className = "col-12";
+                document.getElementById('sideFormColumn').classList.add('d-none');
+                document.getElementById('statusGroup').classList.remove('d-none');
+                document.getElementById('editCoverGroup').classList.remove('d-none');
+                document.getElementById('editBannerGroup').classList.remove('d-none');
+                document.getElementById('editSubmitGroup').classList.remove('d-none');
+
+                // Load existing data
+                try {
+                    const manga = await ApiService.getMangaDetail(editId);
+                    document.getElementById('mangaTitle').value = manga.title;
+                    document.getElementById('mangaAltTitle').value = manga.alternativeTitle || '';
+                    document.getElementById('mangaDesc').value = manga.description || '';
+                    document.getElementById('mangaType').value = manga.seriesType.toLowerCase();
+                    document.getElementById('mangaStatus').value = (manga.status || 'ongoing').toLowerCase();
+
+                    // Pre-check genres
+                    if (manga.genres) {
+                        const genreCheckboxes = document.querySelectorAll('.genre-checkbox');
+                        manga.genres.forEach(g => {
+                            genreCheckboxes.forEach(cb => {
+                                if (cb.value === g.name || cb.value === g.genreName) cb.checked = true;
+                            });
+                        });
+                    }
+
+                    if (manga.authors && manga.authors.length > 0) {
+                        document.getElementById('mangaAuthor').value = manga.authors[0].name;
+                    }
+                    
+                    // Show current cover from DB
+                    if (manga.coverUrl) {
+                        const previewEl = document.getElementById('currentCoverPreview');
+                        if (previewEl) {
+                            previewEl.src = getImageUrl(manga.coverUrl);
+                            previewEl.style.display = 'block';
+                        }
+                    }
+
+                    if (manga.bannerUrl) {
+                        const bannerPreviewEl = document.getElementById('currentBannerPreview');
+                        if (bannerPreviewEl) {
+                            bannerPreviewEl.src = getImageUrl(manga.bannerUrl);
+                            bannerPreviewEl.style.display = 'block';
+                        }
+                    }
+                } catch (err) {
+                    alert("Không thể tải thông tin truyện!");
+                }
+            } else if (type === 'chapter' && mangaId) {
+                // CHAPTER ONLY MODE
+                document.getElementById('formTitle').textContent = "Đăng Chương Mới";
+                document.getElementById('mainFormColumn').classList.add('d-none');
+                document.getElementById('sideFormColumn').className = "col-12 mx-auto";
+                document.getElementById('sideFormColumn').style.maxWidth = "600px";
+                document.getElementById('btnUploadManga').textContent = "ĐĂNG CHƯƠNG";
+                
+                try {
+                    const manga = await ApiService.getMangaDetail(mangaId);
+                    document.getElementById('formTitle').textContent = `Đăng Chương: ${manga.title}`;
+                } catch(e){}
+            } else {
+                // CREATE MODE: Hide cover field as requested
+                document.getElementById('createCoverGroup').classList.add('d-none');
+            }
+
+            folderDropZone.addEventListener('click', () => folderInput.click());
+
+            folderInput.addEventListener('change', (e) => {
+                selectedFiles = Array.from(e.target.files).filter(f => f.type.startsWith('image/'));
+                if (selectedFiles.length > 0) {
+                    dropZoneText.textContent = `Đã chọn ${selectedFiles.length} ảnh`;
+                    fileCountText.textContent = "Click để thay đổi thư mục";
+                }
+            });
+
+            // Unified Update Handler
+            async function handleMangaAction(isEdit) {
+                const user = JSON.parse(localStorage.getItem('user'));
+                if (!user || !['admin', 'uploader', 'translator'].includes(user.role)) {
+                    alert("Bạn không có quyền thực hiện chức năng này!");
+                    return;
+                }
+
+                const activeBtn = isEdit ? btnUpdateOnly : btnUpload;
+
+                try {
+                    activeBtn.disabled = true;
+                    activeBtn.textContent = "ĐANG XỬ LÝ...";
+
+                    // CASE 1: CHAPTER ONLY UPLOAD (From Group Management)
+                    if (type === 'chapter' && mangaId) {
+                        if (selectedFiles.length === 0) {
+                            alert("Vui lòng chọn folder ảnh chương!");
+                            activeBtn.disabled = false;
+                            activeBtn.textContent = "ĐĂNG CHƯƠNG";
+                            return;
+                        }
+                        const chapterData = {
+                            series: { seriesId: parseInt(mangaId) },
+                            chapterNumber: document.getElementById('chapterNumber').value,
+                            title: document.getElementById('chapterTitle').value || `Chương ${document.getElementById('chapterNumber').value}`,
+                            paid: false,
+                            price: 0
+                        };
+                        const chapter = await ApiService.createChapter(chapterData);
+                        await ApiService.uploadChapterPages(chapter.chapterId, selectedFiles);
+                        alert("Đăng chương thành công!");
+                        window.location.href = `chi-tiet-truyen.html?id=${mangaId}`;
+                        return;
+                    }
+
+                    // CASE 2: MANGA INFO (Create or Edit)
+                    const mangaData = {
+                        title: document.getElementById('mangaTitle').value,
+                        alternativeTitle: document.getElementById('mangaAltTitle').value,
+                        description: document.getElementById('mangaDesc').value,
+                        seriesType: document.getElementById('mangaType').value,
+                        status: isEdit ? document.getElementById('mangaStatus').value : 'ongoing',
+                        ageRating: 'all',
+                        genres: Array.from(document.querySelectorAll('.genre-checkbox:checked')).map(cb => cb.value)
+                    };
+
+                    if (!mangaData.title || !mangaData.description) {
+                        alert("Vui lòng điền đầy đủ thông tin truyện!");
+                        activeBtn.disabled = false;
+                        activeBtn.textContent = isEdit ? "CẬP NHẬT TRUYỆN" : "ĐĂNG TRUYỆN";
+                        return;
+                    }
+
+                    const coverFile = isEdit
+                        ? document.getElementById('mangaCoverFileEdit').files[0]
+                        : document.getElementById('mangaCoverFile').files[0];
+
+                    const bannerFile = isEdit
+                        ? document.getElementById('mangaBannerFileEdit').files[0]
+                        : document.getElementById('mangaBannerFile').files[0];
+
+                    if (isEdit) {
+                        await ApiService.updateManga(editId, mangaData, coverFile, bannerFile);
+                        alert("Cập nhật truyện thành công!");
+                        window.location.href = 'quan-ly-nhom.html';
+                    } else {
+                        // Create Mode: Require cover and first chapter images
+                        // if (!coverFile) {
+                        //     alert("Vui lòng chọn ảnh bìa!");
+                        //     activeBtn.disabled = false;
+                        //     activeBtn.textContent = "ĐĂNG TRUYỆN";
+                        //     return;
+                        // }
+                        if (selectedFiles.length === 0) {
+                            alert("Vui lòng chọn folder ảnh chương!");
+                            activeBtn.disabled = false;
+                            activeBtn.textContent = "ĐĂNG TRUYỆN";
+                            return;
+                        }
+
+                        const manga = await ApiService.createManga(mangaData, coverFile, bannerFile);
+                        const chapterData = {
+                            series: { seriesId: manga.seriesId },
+                            chapterNumber: document.getElementById('chapterNumber').value,
+                            title: document.getElementById('chapterTitle').value || `Chương ${document.getElementById('chapterNumber').value}`,
+                            paid: false,
+                            price: 0
+                        };
+                        const chapter = await ApiService.createChapter(chapterData);
+                        await ApiService.uploadChapterPages(chapter.chapterId, selectedFiles);
+                        alert("Đăng truyện và chương đầu thành công!");
+                        window.location.href = 'quan-ly-nhom.html';
+                    }
+                } catch (error) {
+                    console.error(error);
+                    alert("Lỗi: " + error.message);
+                } finally {
+                    activeBtn.disabled = false;
+                    activeBtn.textContent = isEdit ? "CẬP NHẬT TRUYỆN" : (type === 'chapter' ? "ĐĂNG CHƯƠNG" : "ĐĂNG TRUYỆN");
+                }
+            }
+
+            btnUpload.addEventListener('click', () => handleMangaAction(false));
+            btnUpdateOnly.addEventListener('click', () => handleMangaAction(true));
+        });
+
+        function togglePriceInput(checkbox) {
+            const priceInputGroup = document.getElementById('priceInputGroup');
+            if (priceInputGroup) {
+                priceInputGroup.classList.toggle('d-none', !checkbox.checked);
+            }
+        }
+    </script>
+</body>
+
+</html>

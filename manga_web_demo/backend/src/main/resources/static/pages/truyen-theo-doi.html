@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1200"> <!-- Cố định kích thước cho Desktop -->
+    <meta name="description" content="Cứu Truyện - Truyện theo dõi">
+    <title>Cứu Truyện - Truyện Theo Dõi</title>
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <style>
+        /* Trang full grid nên background có thể cần xám đồng bộ hơn */
+        body {
+            background-color: var(--primary-bg);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Bắt đầu Header (Bê nguyên từ index.html) -->
+    <div id="app-header"></div>
+    <!-- Kết thúc Header -->
+
+    <!-- Main Content -->
+    <main class="py-5">
+        <div class="container-fluid px-5 mx-auto" style="max-width: 1400px;">
+
+            <!-- Truyen Theo Doi Section -->
+            <section class="recently-updated-section mb-5 position-relative">
+                <div class="d-flex justify-content-between align-items-center mb-5">
+                    <h4 class="fw-bold fs-5 text-uppercase text-secondary section-title">TRUYỆN THEO DÕI</h4>
+                </div>
+
+                <!-- Lưới 5 cột mỗi hàng `row-cols-5` -->
+                <div class="row row-cols-5 g-4 pb-5" id="mangaList">
+                    <!-- Nội dung sinh ra bằng Javascript -->
+                    <div class="col-12 text-center py-5">
+                        <div class="spinner-border text-primary" role="status"></div>
+                        <p class="mt-2 text-secondary">Đang tải danh sách truyện đang theo dõi...</p>
+                    </div>
+                </div>
+
+                <!-- Phân trang -->
+                <nav aria-label="Page navigation" class="mt-4">
+                    <ul class="pagination justify-content-center" id="pagination">
+                        <!-- Pagination buttons will be injected here -->
+                    </ul>
+                </nav>
+
+
+                <script>
+                    document.addEventListener('DOMContentLoaded', async () => {
+                        const container = document.getElementById('mangaList');
+
+                        try {
+                            const user = JSON.parse(localStorage.getItem('user'));
+                            if (!user) {
+                                window.location.href='../index.html';
+                                return;
+                            }
+
+                            const favorites = await ApiService.getMeFavorites();
+
+                            if (favorites.length === 0) {
+                                container.innerHTML = `
+                                    <div class="col-12 text-center py-5">
+                                        <i class="fa-solid fa-heart-crack fs-1 mb-3 text-secondary opacity-25"></i>
+                                        <p class="text-secondary fw-bold">Anh chưa theo dõi truyện nào cả!</p>
+                                        <a href="../index.html" class="btn btn-primary rounded-pill px-4 mt-2">Khám phá ngay</a>
+                                    </div>
+                                `;
+                                return;
+                            }
+
+                            container.innerHTML = favorites.map(manga => `
+                                <div class="col">
+                                    <div class="manga-card h-100">
+                                        <div class="card border-0 bg-transparent h-100">
+                                            <div class="manga-cover rounded-3 overflow-hidden position-relative shadow-sm mb-2" style="aspect-ratio: 2/3;">
+                                                <a href="chi-tiet-truyen.html?id=${manga.seriesId}" class="d-block w-100 h-100">
+                                                    <img src="${getImageUrl(manga.coverUrl) || ''}"
+                                                        alt="${manga.title}" class="w-100 h-100 object-fit-cover" style="background-color: #f0f0f0;">
+                                                </a>
+                                            </div>
+                                            <div class="card-body p-0 mt-2">
+                                                <h6 class="card-title fw-bold text-truncate mb-1">
+                                                    <a href="chi-tiet-truyen.html?id=${manga.seriesId}" class="text-dark text-decoration-none">${manga.title}</a>
+                                                </h6>
+                                                <p class="card-text small text-muted mb-0">${manga.author || 'N/A'}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            `).join('');
+
+                        } catch (error) {
+                            console.error("Error loading favorites:", error);
+                            container.innerHTML = '<div class="col-12 text-center py-5 text-danger">Không thể tải dữ liệu. Vui lòng kiểm tra lại!</div>';
+                        }
+                    });
+                </script>
+
+            </section>
+        </div>
+
+        <!-- Floating Chat Button-->
+        <a href="#" class="floating-chat-btn">
+            <i class="fa-brands fa-facebook-messenger"></i>
+        </a>
+
+    </main>
+
+    <!-- Search Overlay -->
+    <div id="searchOverlay" class="search-overlay d-none">
+        <div class="search-overlay-content container mx-auto" style="max-width: 800px; padding-top: 100px;">
+            <!-- Search Input Container -->
+            <div class="position-relative">
+                <input type="text" id="liveSearchInput"
+                    class="form-control form-control-lg py-3 px-4 rounded-3 shadow-sm"
+                    style="font-size: 1.15rem; border: 2px solid #a2bdf8;" placeholder="Tìm kiếm...">
+                <div class="d-flex justify-content-end mt-2">
+                    <a href="search.html" class="text-secondary fw-bold text-decoration-none"
+                        style="font-size: 0.85rem;">Tìm kiếm nâng cao</a>
+                </div>
+            </div>
+
+            <!-- Dropdown Results Container -->
+            <div id="searchResults"
+                class="search-results-dropdown bg-white rounded-3 shadow-lg mt-3 overflow-hidden d-none">
+                <div class="list-group list-group-flush" id="searchResultList">
+                    <!-- Template Javascript -->
+                </div>
+                <div class="bg-light p-3 border-top pb-2">
+                    <a href="search.html" class="text-secondary text-decoration-none fw-bold"
+                        style="font-size: 0.85rem;" id="searchAllText">Tìm tất cả kết quả cho từ khóa</a>
+                </div>
+            </div>
+        </div>
+        <!-- Button to close overlay -->
+        <button id="closeSearchBtn" class="btn text-secondary position-absolute top-0 end-0 m-4 fs-2 border-0"><i
+                class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/js/api.js"></script>
+    <script src="../assets/js/script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1200">
+    <meta name="description" content="Cứu Truyện - Bảng Xếp Hạng">
+    <title>Cứu Truyện - Bảng Xếp Hạng</title>
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+
+    <style>
+        body {
+            background-color: var(--primary-bg);
+            font-family: 'Inter', sans-serif;
+        }
+
+        .ranking-container {
+            max-width: 900px;
+            margin: auto;
+        }
+
+        .rank-card {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+        }
+
+        .rank-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .rank-number {
+            font-size: 2.5rem;
+            font-weight: 900;
+            width: 80px;
+            text-align: center;
+            color: #cbd5e1;
+            font-style: italic;
+        }
+
+        /* Top 1, 2, 3 Styles */
+        .rank-1 .rank-number { color: #fbbf24; text-shadow: 0 2px 4px rgba(251, 191, 36, 0.3); } /* Gold */
+        .rank-2 .rank-number { color: #94a3b8; text-shadow: 0 2px 4px rgba(148, 163, 184, 0.3); } /* Silver */
+        .rank-3 .rank-number { color: #b45309; text-shadow: 0 2px 4px rgba(180, 83, 9, 0.3); } /* Bronze */
+
+        .rank-cover {
+            width: 70px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin: 10px;
+        }
+
+        .rank-1 .rank-cover { width: 100px; height: 140px; }
+        .rank-2 .rank-cover, .rank-3 .rank-cover { width: 85px; height: 120px; }
+
+        .rank-info {
+            flex-grow: 1;
+            padding: 15px;
+        }
+
+        .rank-views {
+            font-weight: 700;
+            color: #ef4444;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Bắt đầu Header -->
+    <div id="app-header"></div>
+
+    <main class="py-5">
+        <div class="ranking-container">
+            <div class="text-center mb-5">
+                <h1 class="fw-bold" style="color: #1e293b; letter-spacing: -1px;">🏆 BẢNG XẾP HẠNG</h1>
+                <p class="text-muted">Top 10 truyện có lượt xem cao nhất mọi thời đại</p>
+            </div>
+
+            <div id="rankingList" class="d-flex flex-column gap-3">
+                <div class="text-center text-muted py-5">
+                    <div class="spinner-border text-warning" role="status"></div>
+                    <p class="mt-2">Đang tải bảng xếp hạng...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Search Overlay -->
+    <div id="searchOverlay" class="search-overlay d-none">
+        <div class="search-overlay-content container mx-auto" style="max-width: 800px; padding-top: 100px;">
+            <div class="position-relative">
+                <input type="text" id="liveSearchInput"
+                    class="form-control form-control-lg py-3 px-4 rounded-3 shadow-sm"
+                    style="font-size: 1.15rem; border: 2px solid #a2bdf8;" placeholder="Tìm kiếm...">
+            </div>
+        </div>
+        <button id="closeSearchBtn" class="btn text-secondary position-absolute top-0 end-0 m-4 fs-2 border-0"><i
+                class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/js/api.js"></script>
+    <script src="../assets/js/script.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const rankingList = document.getElementById('rankingList');
+            
+            try {
+                const response = await ApiService.getTopViewsMangas(10);
+                const topMangas = response && Array.isArray(response) ? response : (response.content || []);
+                
+                if (!topMangas || topMangas.length === 0) {
+                    rankingList.innerHTML = '<div class="text-center text-muted py-5"><i class="fa-solid fa-ghost fs-1 mb-3"></i><p>Chưa có dữ liệu truyện tranh.</p></div>';
+                    return;
+                }
+
+                let html = '';
+                topMangas.forEach((manga, index) => {
+                    const rankClass = index < 3 ? `rank-${index + 1}` : 'rank-normal';
+                    const coverUrl = window.getImageUrl(manga.coverUrl) || 'https://placehold.co/100x140?text=No+Cover';
+                    const formattedViews = new Intl.NumberFormat('vi-VN').format(manga.totalViews || 0);
+                    // Use manga.author mapping if it exists, sometimes they provide a string or an object in other APIs. But according to vw_series it might be 'authors'
+                    let authorText = 'Chưa rõ';
+                    if (manga.authors) authorText = manga.authors;
+                    if (manga.author) authorText = typeof manga.author === 'string' ? manga.author : manga.author.name;
+
+                    html += `
+                        <a href="chi-tiet-truyen.html?id=${manga.seriesId}" class="text-decoration-none text-dark">
+                            <div class="rank-card ${rankClass}">
+                                <div class="rank-number">${index + 1}</div>
+                                <img src="${coverUrl}" class="rank-cover shadow-sm" alt="Cover">
+                                <div class="rank-info">
+                                    <h4 class="fw-bold mb-1 ${index === 0 ? 'fs-3' : (index < 3 ? 'fs-4' : 'fs-5')}">${manga.title}</h4>
+                                    <div class="text-muted small mb-2"><i class="fa-solid fa-pen-nib me-1"></i> ${authorText}</div>
+                                    <div class="d-flex gap-2 mb-2">
+                                        <span class="badge bg-light text-dark border">${manga.seriesType || 'Manga'}</span>
+                                        <span class="badge bg-light text-dark border"><i class="fa-solid fa-star text-warning me-1"></i>${manga.averageRating || '0.0'}</span>
+                                    </div>
+                                    <div class="rank-views mt-auto">
+                                        <i class="fa-solid fa-fire"></i> ${formattedViews} lượt xem
+                                    </div>
+                                </div>
+                                ${index === 0 ? '<div class="pe-4"><i class="fa-solid fa-crown text-warning" style="font-size: 3rem; opacity: 0.2;"></i></div>' : ''}
+                            </div>
+                        </a>
+                    `;
+                });
+                
+                rankingList.innerHTML = html;
+            } catch (err) {
+                console.error("Lỗi tải Bảng Xếp Hạng:", err);
+                rankingList.innerHTML = `<div class="text-center text-danger py-5"><i class="fa-solid fa-circle-exclamation fs-1 mb-3"></i><p>Không thể tải bảng xếp hạng: ${err.message}</p></div>`;
+            }
+        });
+    </script>
+</body>
+</html>

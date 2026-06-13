@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1200">
+    <meta name="description" content="Cứu Truyện - Chi tiết truyện">
+    <title>Cứu Truyện - Tên Truyện Demo</title>
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <style>
+        body {
+            background-color: var(--primary-bg);
+        }
+
+        /* Premium Banner Styles */
+        .manga-hero-section {
+            position: relative;
+            padding: 80px 0;
+            overflow: hidden;
+            background-color: #000;
+        }
+
+        .manga-hero-bg {
+            position: absolute;
+            top: -10%;
+            left: -10%;
+            width: 120%;
+            height: 120%;
+            background-size: cover;
+            background-position: center;
+            filter: blur(40px) brightness(0.4);
+            z-index: 1;
+        }
+
+        .manga-hero-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .manga-detail-cover {
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            width: 100%;
+            aspect-ratio: 2 / 2.8;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .manga-detail-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .manga-title {
+            color: #fff;
+            font-size: 2.8rem;
+            font-weight: 850;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            line-height: 1.2;
+        }
+
+        .manga-alt-title {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        .manga-meta-item {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+            margin-right: 1.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 30px;
+            backdrop-filter: blur(5px);
+        }
+
+        .manga-meta-item i {
+            margin-right: 0.5rem;
+        }
+
+        .genre-badge {
+            background-color: rgba(247, 169, 40, 0.2);
+            color: #f7a928;
+            font-weight: 700;
+            padding: 0.5rem 1.2rem;
+            border-radius: 30px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            border: 1px solid rgba(247, 169, 40, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        .genre-badge:hover {
+            background-color: #f7a928;
+            color: #fff;
+        }
+
+        .action-btn {
+            font-weight: 800;
+            padding: 0.9rem 2rem;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: none;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-read-first {
+            background: linear-gradient(135deg, #f7a928, #e0961c);
+            color: #fff;
+            box-shadow: 0 8px 20px rgba(247, 169, 40, 0.4);
+        }
+
+        .btn-read-first:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 12px 25px rgba(247, 169, 40, 0.5);
+            color: #fff;
+        }
+
+        .btn-follow {
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-follow:hover {
+            background: #fff;
+            color: #3b322e;
+            transform: translateY(-5px);
+        }
+
+        /* Synopsis & Chapters Cards */
+        .content-card {
+            background: #fff;
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+
+        .section-title-premium {
+            font-weight: 800;
+            color: #1e293b;
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .section-title-premium::before {
+            content: "";
+            width: 6px;
+            height: 24px;
+            background: #f7a928;
+            border-radius: 10px;
+            margin-right: 12px;
+        }
+
+        .synopsis-text {
+            color: #475569;
+            line-height: 1.8;
+            font-size: 1.1rem;
+        }
+
+        .chapter-table {
+            width: 100%;
+        }
+
+        .chapter-table th {
+            padding: 1rem;
+            color: #94a3b8;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        .chapter-table td {
+            padding: 1.2rem 1rem;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: middle;
+        }
+
+        .chapter-row {
+            transition: all 0.2s;
+            cursor: pointer;
+            text-decoration: none;
+            display: table-row;
+            color: inherit;
+        }
+
+        .chapter-row:hover {
+            background-color: #f8fafc;
+        }
+
+        .chapter-row:hover .chapter-name {
+            color: #f7a928;
+        }
+
+        .chapter-name {
+            font-weight: 700;
+            color: #1e293b;
+            font-size: 1.1rem;
+        }
+
+        .chapter-group {
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .chapter-date {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Bắt đầu Header -->
+    <div id="app-header"></div>
+
+    <!-- Main Content: Premium Hero Section -->
+    <section class="manga-hero-section">
+        <div class="manga-hero-bg" id="heroBg" style="background-color: #3b322e;"></div>
+        <div class="container-fluid px-5 manga-hero-content mx-auto" style="max-width: 1300px;">
+            <div class="row gx-5 align-items-center">
+                <!-- Cover -->
+                <div class="col-3">
+                    <div class="manga-detail-cover">
+                        <img id="mangaCover" src="" alt="Manga Cover">
+                    </div>
+                </div>
+                <!-- Info -->
+                <div class="col-9">
+                    <div class="ps-3">
+                        <div class="mb-2">
+                            <span class="badge bg-warning text-dark fw-bold px-3 py-2 rounded-pill mb-3 shadow">#1
+                                TRENDING</span>
+                        </div>
+                        <h1 class="manga-title mb-2">Tên Manga Hoành Tráng Cực Kỳ Hấp Dẫn</h1>
+                        <p class="manga-alt-title mb-4">The Great Adventure of Hero (Tên Khác Đây Này)</p>
+
+                        <div class="d-flex flex-wrap align-items-center mb-4 gap-3">
+                            <span class="manga-meta-item bg-dark text-white fw-bold border border-warning"><i class="fa-solid fa-hashtag text-warning"></i> ID: <span id="publicId">...</span></span>
+                            <span class="manga-meta-item"><i class="fa-solid fa-star text-warning"></i> <span id="metaRating">4.9</span></span>
+                            <span class="manga-meta-item"><i class="fa-solid fa-eye text-info"></i> <span id="metaViews">12.5M</span></span>
+                            <span class="manga-meta-item"><i class="fa-solid fa-heart text-danger"></i> <span id="metaFollowers">45.2K</span></span>
+                            <span class="manga-meta-item"><i class="fa-solid fa-user-pen"></i> <span id="metaAuthor">Oda Eiichiro</span></span>
+                        </div>
+
+                        <!-- Genres -->
+                        <div class="d-flex flex-wrap gap-2 mb-5">
+                            <a href="#" class="genre-badge text-decoration-none">ACTION</a>
+                            <a href="#" class="genre-badge text-decoration-none">ADVENTURE</a>
+                            <a href="#" class="genre-badge text-decoration-none">FANTASY</a>
+                            <a href="#" class="genre-badge text-decoration-none">SHOUNEN</a>
+                        </div>
+
+                        <!-- Main Actions -->
+                        <div class="d-flex gap-3">
+                            <a href="doc-truyen.html" class="action-btn btn-read-first px-5 text-decoration-none"><i
+                                    class="fa-solid fa-book-open me-2"></i> Đọc từ đầu</a>
+                            <button class="action-btn btn-follow"><i class="fa-regular fa-heart me-2"></i> Theo dõi
+                                truyện</button>
+                            <button class="action-btn bg-danger text-white border-0" onclick="showReportModal('manga', new URLSearchParams(window.location.search).get('id') || 1)"><i class="fa-solid fa-flag me-2"></i> Báo cáo</button>
+                        </div>
+
+                        <!-- Rating System -->
+                        <div class="mt-4 pt-3 border-top border-secondary border-opacity-25" style="max-width: 400px;">
+                            <div class="text-white-50 mb-2 small fw-bold">ĐÁNH GIÁ TRUYỆN CỦA BẠN</div>
+                            <div class="d-flex align-items-center gap-2" id="ratingStars">
+                                <i class="fa-regular fa-star fs-4 text-warning" style="cursor: pointer;" data-rating="1"></i>
+                                <i class="fa-regular fa-star fs-4 text-warning" style="cursor: pointer;" data-rating="2"></i>
+                                <i class="fa-regular fa-star fs-4 text-warning" style="cursor: pointer;" data-rating="3"></i>
+                                <i class="fa-regular fa-star fs-4 text-warning" style="cursor: pointer;" data-rating="4"></i>
+                                <i class="fa-regular fa-star fs-4 text-warning" style="cursor: pointer;" data-rating="5"></i>
+                                <span class="text-white ms-2 fw-bold" id="ratingScoreText">Chưa đánh giá</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sub Content: Synopsis and Chapters -->
+    <main class="py-5"
+        style="background-color: #f8fafc; margin-top: -30px; position: relative; z-index: 10; border-radius: 40px 40px 0 0;">
+        <div class="container mx-auto" style="max-width: 1200px;">
+            <div class="row gx-4">
+                <!-- Left: Synopsis & Chapters -->
+                <div class="col-12">
+                    <div class="content-card">
+                        <div id="groupInfoContainer" class="d-none align-items-center mb-3 p-3 bg-light rounded border">
+                            <i class="fa-solid fa-users text-primary me-2 fs-5"></i>
+                            <span class="fw-bold text-secondary me-2">Nhóm dịch:</span>
+                            <span id="groupNameText" class="fw-bold text-dark fs-5"></span>
+                        </div>
+                        <h4 class="section-title-premium">Tóm Tắt Nội Dung</h4>
+                        <p class="synopsis-text">
+                            Kể từ khi bắt đầu kỷ nguyên hải tặc, vô số cướp biển đã giương buồm ra khơi để tìm kiếm kho
+                            báu huyền thoại "One Piece" được để lại bởi Vua Hải Tặc quá cố, Gol D. Roger. Tuy nhiên,
+                            thay vì là một tên cướp biển hung ác tàn bạo, Monkey D. Luffy lại là một câu bé mang giấc mơ
+                            trở thành Vua Hải Tặc vì muốn có một cuộc phiêu lưu tự do. Cậu cùng những người đồng đội
+                            vượt qua vô số thử thách, đối đầu với hải quân và những thế lực sừng sỏ nhất thế giới để đạt
+                            được ước mơ của mình. Một hành trình bất tận về tình bạn, ước mơ và sự tự do.
+                        </p>
+                    </div>
+
+                    <div class="content-card">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h4 class="section-title-premium mb-0">Danh Sách Chương</h4>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="chapter-table">
+                                <thead>
+                                    <tr>
+                                        <th class="ps-0">TÊN CHƯƠNG</th>
+                                        <th>NHÓM DỊCH</th>
+                                        <th class="text-end">NGÀY ĐĂNG</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="chapterList">
+                                    <!-- JS content -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Search Overlay -->
+    <div id="searchOverlay" class="search-overlay d-none">
+        <div class="search-overlay-content container mx-auto" style="max-width: 800px; padding-top: 100px;">
+            <div class="position-relative">
+                <input type="text" id="liveSearchInput"
+                    class="form-control form-control-lg py-3 px-4 rounded-3 shadow-sm"
+                    style="font-size: 1.15rem; border: 2px solid #a2bdf8;" placeholder="Tìm kiếm...">
+                <div class="d-flex justify-content-end mt-2">
+                    <a href="search.html" class="text-secondary fw-bold text-decoration-none"
+                        style="font-size: 0.85rem;">Tìm kiếm nâng cao</a>
+                </div>
+            </div>
+            <div id="searchResults"
+                class="search-results-dropdown bg-white rounded-3 shadow-lg mt-3 overflow-hidden d-none">
+                <div class="list-group list-group-flush" id="searchResultList"></div>
+                <div class="bg-light p-3 border-top pb-2">
+                    <a href="search.html" class="text-secondary text-decoration-none fw-bold"
+                        style="font-size: 0.85rem;" id="searchAllText">Tìm tất cả kết quả cho từ khóa</a>
+                </div>
+            </div>
+        </div>
+        <button id="closeSearchBtn" class="btn text-secondary position-absolute top-0 end-0 m-4 fs-2 border-0"><i
+                class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <!-- Report Modal -->
+    <div class="modal fade" id="reportModal" tabindex="-1" data-bs-theme="dark">
+      <div class="modal-dialog">
+        <div class="modal-content text-white" style="background-color: var(--primary-bg);">
+          <div class="modal-header border-secondary">
+            <h5 class="modal-title" id="reportModalTitle"><i class="fa-solid fa-flag text-danger me-2"></i> Báo Cáo Vi Phạm</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="reportEntityType">
+            <input type="hidden" id="reportEntityId">
+            <div class="mb-3">
+              <label for="reportReason" class="form-label text-secondary fw-bold">Lý do báo cáo</label>
+              <textarea class="form-control bg-dark text-white border-secondary" id="reportReason" rows="3" placeholder="Ví dụ: Truyện có nội dung phản cảm, sai chính tả, lỗi ảnh..." required></textarea>
+            </div>
+          </div>
+          <div class="modal-footer border-secondary">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+            <button type="button" class="btn btn-danger fw-bold" id="btnSubmitReport">Gửi Báo Cáo</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/js/api.js"></script>
+    <script src="../assets/js/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const params = new URLSearchParams(window.location.search);
+            const seriesId = params.get('id') || 1;
+
+            try {
+                // Fetch Manga Info
+                const manga = await ApiService.getMangaDetail(seriesId);
+                const chapters = await ApiService.getChaptersBySeries(seriesId);
+
+                // Update Hero Section
+                document.title = `${manga.title} - Cứu Truyện`;
+                document.querySelector('.manga-title').textContent = manga.title;
+                if (manga.alternativeTitle) {
+                    document.querySelector('.manga-alt-title').textContent = manga.alternativeTitle;
+                }
+
+                const serverUrl = API_CONFIG.BASE_URL.replace('/api', '');
+                const finalCoverUrl = getImageUrl(manga.coverUrl);
+                const finalBannerUrl = manga.bannerUrl ? getImageUrl(manga.bannerUrl) : finalCoverUrl;
+
+                const heroBg = document.querySelector('.manga-hero-bg');
+                heroBg.style.backgroundImage = `url('${finalBannerUrl}')`;
+                if (manga.bannerUrl) {
+                    heroBg.style.filter = 'brightness(0.5)';
+                } else {
+                    heroBg.style.filter = 'blur(40px) brightness(0.4)';
+                }
+
+                document.querySelector('.manga-detail-cover img').src = finalCoverUrl;
+
+                // Lấy dữ liệu thật từ DB
+                const realViews = manga.totalViews || 0;
+                let currentFollowers = manga.totalFavorites || 0;
+                // Update Images
+                const coverImg = document.getElementById('mangaCover');
+                if (coverImg) coverImg.src = getImageUrl(manga.coverUrl);
+
+                const realRating = manga.averageRating || 0;
+
+                // Update Stats
+                const metaContainer = document.querySelector('.manga-meta-item').parentElement;
+                metaContainer.innerHTML = `
+                    <span class="manga-meta-item bg-dark text-white fw-bold border border-warning"><i class="fa-solid fa-hashtag text-warning"></i> ID: <span id="publicId">${manga.seriesId}</span></span>
+                    <span class="manga-meta-item"><i class="fa-solid fa-star text-warning"></i> <span id="metaRating">${realRating.toFixed(1)}</span></span>
+                    <span class="manga-meta-item"><i class="fa-solid fa-eye text-info"></i> ${realViews.toLocaleString()}</span>
+                    <span class="manga-meta-item"><i class="fa-solid fa-heart text-danger"></i> <span id="metaFollowers">${currentFollowers.toLocaleString()}</span></span>
+                    <span class="manga-meta-item"><i class="fa-solid fa-user-pen"></i> ${manga.authors && manga.authors.length > 0 ? manga.authors.map(a => a.name).join(', ') : 'Đang cập nhật'}</span>
+                `;
+
+                // Update Genres
+                const genreContainer = document.querySelector('.genre-badge').parentElement;
+                genreContainer.innerHTML = (manga.genres || []).map(g => `
+                    <a href="search.html?genre=${g.genreId}" class="genre-badge text-decoration-none">${(g.genreName || 'GENRE').toUpperCase()}</a>
+                `).join('');
+
+                const synopsisEl = document.querySelector('.synopsis-text');
+                if (synopsisEl) synopsisEl.textContent = manga.description || 'Chưa có tóm tắt cho truyện này.';
+
+                // Update Translation Group
+                if (manga.translationGroup && manga.translationGroup.name) {
+                    const groupContainer = document.getElementById('groupInfoContainer');
+                    const groupNameText = document.getElementById('groupNameText');
+                    if (groupContainer && groupNameText) {
+                        groupNameText.textContent = manga.translationGroup.name;
+                        groupContainer.classList.remove('d-none');
+                        groupContainer.classList.add('d-flex');
+                    }
+                }
+
+                const safeSetText = (id, text) => {
+                    const el = document.getElementById(id);
+                    if (el) el.textContent = text;
+                };
+
+                safeSetText('metaRating', (manga.averageRating || 0).toFixed(1));
+                safeSetText('metaViews', (manga.totalViews || 0).toLocaleString());
+                safeSetText('metaFollowers', (manga.totalFavorites || 0).toLocaleString());
+                safeSetText('publicId', manga.seriesId);
+                const authorEl = document.getElementById('metaAuthor');
+                if (authorEl) authorEl.textContent = manga.authors && manga.authors.length > 0 ? manga.authors.map(a => a.name).join(', ') : 'Đang cập nhật';
+
+                // Update Actions
+                if (chapters.length > 0) {
+                    const firstChapterId = [...chapters].sort((a, b) => a.chapterNumber - b.chapterNumber)[0].chapterId;
+                    document.querySelector('.btn-read-first').href = `doc-truyen.html?chapterId=${firstChapterId}`;
+                } else {
+                    document.querySelector('.btn-read-first').classList.add('disabled');
+                }
+
+                // Update Chapter List
+                const chapterTableBody = document.getElementById('chapterList');
+                if (chapters.length === 0) {
+                    chapterTableBody.innerHTML = '<tr><td colspan="3" class="text-center py-5 text-secondary">Chưa có chương nào được đăng.</td></tr>';
+                } else {
+                    chapterTableBody.innerHTML = chapters.map(c => `
+                    <tr class="chapter-row" data-chapter-id="${c.chapterId}"
+                        onclick="handleChapterClick(${c.chapterId})">
+                        <td class="ps-0">
+                            <span class="chapter-name">
+                                <i class="fa-solid fa-book-open text-muted me-1"></i>
+                                Chương ${c.chapterNumber}${c.title ? ': ' + c.title : ''}
+                            </span>
+                        </td>
+                        <td><span class="chapter-group text-secondary">Cứu Truyện</span></td>
+                        <td class="text-end"><span class="chapter-date">${new Date(c.createdAt).toLocaleDateString()}</span></td>
+                    </tr>
+                    `).join('');
+                }
+
+                // Setup Follow Button
+                const followBtn = document.querySelector('.btn-follow');
+                const isFollowing = localStorage.getItem('follow_manga_' + seriesId) === 'true';
+                if (isFollowing) {
+                    followBtn.innerHTML = '<i class="fa-solid fa-heart me-2 text-danger"></i> Đang theo dõi';
+                }
+                followBtn.addEventListener('click', async () => {
+                    const currentlyFollowing = localStorage.getItem('follow_manga_' + seriesId) === 'true';
+                    const metaFollowersEl = document.getElementById('metaFollowers');
+                    try {
+                        const updatedManga = await ApiService.toggleFavorite(seriesId, !currentlyFollowing);
+                        if (currentlyFollowing) {
+                            localStorage.removeItem('follow_manga_' + seriesId);
+                            followBtn.innerHTML = '<i class="fa-regular fa-heart me-2"></i> Theo dõi truyện';
+                            alert('Đã bỏ theo dõi truyện này.');
+                        } else {
+                            localStorage.setItem('follow_manga_' + seriesId, 'true');
+                            followBtn.innerHTML = '<i class="fa-solid fa-heart me-2 text-danger"></i> Đang theo dõi';
+                            alert('Đã thêm vào danh sách theo dõi!');
+                        }
+                        if (metaFollowersEl) metaFollowersEl.textContent = (updatedManga.totalFavorites || 0).toLocaleString();
+                    } catch (err) {
+                        alert('Có lỗi xảy ra khi cập nhật.');
+                    }
+                });
+
+                // Setup Rating System
+                const stars = document.querySelectorAll('#ratingStars i');
+                const ratingText = document.getElementById('ratingScoreText');
+                const savedRating = localStorage.getItem('rating_manga_' + seriesId);
+
+                const updateStars = (rating) => {
+                    stars.forEach((star, index) => {
+                        if (index < rating) {
+                            star.classList.remove('fa-regular');
+                            star.classList.add('fa-solid');
+                        } else {
+                            star.classList.remove('fa-solid');
+                            star.classList.add('fa-regular');
+                        }
+                    });
+                };
+
+                if (savedRating) {
+                    updateStars(parseInt(savedRating));
+                    ratingText.textContent = `Đã đánh giá ${savedRating} sao`;
+                }
+
+                stars.forEach(star => {
+                    star.addEventListener('click', async () => {
+                        const rating = parseInt(star.getAttribute('data-rating'));
+                        try {
+                            const updatedManga = await ApiService.rateManga(seriesId, rating);
+                            localStorage.setItem('rating_manga_' + seriesId, rating);
+                            updateStars(rating);
+                            ratingText.textContent = `Đã đánh giá ${rating} sao`;
+                            document.getElementById('metaRating').textContent = (updatedManga.averageRating || 0).toFixed(1);
+                            alert(`Cảm ơn bạn đã đánh giá ${rating} sao!`);
+                        } catch (err) {
+                            alert('Có lỗi xảy ra khi đánh giá.');
+                        }
+                    });
+                });
+
+                // Check authorization for Add Chapter button
+                const user = JSON.parse(localStorage.getItem('user'));
+            // Removed Add Chapter button logic
+            } catch (error) {
+                console.error("Error loading manga details:", error);
+                document.querySelector('main').innerHTML = '<div class="container py-5"><div class="alert alert-danger">Không thể tải thông tin truyện. Vui lòng kiểm tra Server!</div></div>';
+            }
+        });
+
+        // Handle chapter click with lock check
+        // Handle chapter click
+        async function handleChapterClick(chapterId) {
+            window.location.href = `doc-truyen.html?chapterId=${chapterId}`;
+        }
+
+        // Report Logic
+        let reportModal;
+        function showReportModal(type, id) {
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (!user) {
+                alert("Vui lòng đăng nhập để thực hiện chức năng này!");
+                return;
+            }
+            if (!reportModal) {
+                reportModal = new bootstrap.Modal(document.getElementById('reportModal'));
+            }
+            document.getElementById('reportEntityType').value = type;
+            document.getElementById('reportEntityId').value = id;
+            document.getElementById('reportReason').value = '';
+            reportModal.show();
+        }
+
+        document.getElementById('btnSubmitReport')?.addEventListener('click', async () => {
+            const type = document.getElementById('reportEntityType').value;
+            const id = document.getElementById('reportEntityId').value;
+            const reason = document.getElementById('reportReason').value.trim();
+            
+            if (!reason) {
+                alert("Vui lòng nhập lý do báo cáo!");
+                return;
+            }
+            
+            const btn = document.getElementById('btnSubmitReport');
+            const originalText = btn.innerHTML;
+            try {
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Đang gửi...';
+                await ApiService.createReport(type, parseInt(id), reason);
+                reportModal.hide();
+                alert("Báo cáo của bạn đã được gửi thành công. Cảm ơn bạn đã đóng góp!");
+            } catch (err) {
+                console.error(err);
+                alert("Có lỗi xảy ra khi gửi báo cáo: " + err.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1200">
+    <meta name="description" content="Quản lý Menu - CỨU TRUYỆN Admin">
+    <title>Quản lý Menu - CỨU TRUYỆN</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/navbar.css">
+
+    <style>
+        body { background: #dad3cc; color: #403632; font-family: 'Inter', sans-serif; }
+
+        .page-container { max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+        .page-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #2e1d19;
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .page-title i { color: #e05a2b; }
+
+        .page-subtitle { color: #8c827c; font-size: 0.88rem; margin-bottom: 1.75rem; }
+
+        /* ── Card ── */
+        .menu-card {
+            background: #fff;
+            border: 1px solid rgba(0,0,0,0.07);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.25rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .menu-card-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #403632;
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.55rem;
+        }
+        .menu-card-title i { color: #e05a2b; }
+
+        /* ── Form ── */
+        .form-label-custom {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: #8c827c;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.35rem;
+        }
+
+        .form-control-custom {
+            background: #f5f2ef;
+            border: 2px solid transparent;
+            color: #403632;
+            border-radius: 10px;
+            padding: 0.6rem 0.9rem;
+            font-size: 0.87rem;
+            transition: all 0.2s;
+            width: 100%;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .form-control-custom:focus {
+            outline: none;
+            border-color: #aa9b8d;
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(170,155,141,0.1);
+        }
+
+        select.form-control-custom { cursor: pointer; }
+
+        .btn-primary-custom {
+            background-color: #2e1d19;
+            color: #f1ebd8;
+            border: none;
+            padding: 0.6rem 1.4rem;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.87rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .btn-primary-custom:hover { background-color: #1a0f0d; color: #fff; }
+
+        .btn-secondary-custom {
+            background: rgba(0,0,0,0.06);
+            color: #7a6e67;
+            border: 1px solid rgba(0,0,0,0.1);
+            padding: 0.6rem 1.2rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.87rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-secondary-custom:hover { background: rgba(0,0,0,0.1); color: #403632; }
+
+        /* ── Menu Tree ── */
+        .menu-tree { list-style: none; padding: 0; margin: 0; }
+
+        .menu-tree-item {
+            background: #faf8f6;
+            border: 1px solid rgba(0,0,0,0.07);
+            border-radius: 12px;
+            margin-bottom: 0.5rem;
+            overflow: hidden;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .menu-tree-item:hover {
+            border-color: #aa9b8d;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+        }
+
+        .menu-tree-item-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.85rem 1rem;
+        }
+
+        .menu-tree-item-header.child-item {
+            background: rgba(0,0,0,0.02);
+            padding-left: 2.5rem;
+            border-top: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .menu-icon {
+            width: 34px; height: 34px;
+            border-radius: 9px;
+            background: rgba(224,90,43,0.1);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.8rem; color: #e05a2b; flex-shrink: 0;
+        }
+
+        .menu-info { flex: 1; min-width: 0; }
+        .menu-name { font-weight: 700; font-size: 0.9rem; color: #2e1d19; margin-bottom: 0.1rem; display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
+        .menu-url { font-size: 0.73rem; color: #8c827c; font-family: monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 320px; }
+
+        .menu-meta { display: flex; align-items: center; gap: 0.45rem; flex-shrink: 0; }
+
+        .badge-sort {
+            font-size: 0.68rem;
+            background: rgba(170,155,141,0.2);
+            color: #7a6e67;
+            border-radius: 5px;
+            padding: 0.15rem 0.45rem;
+            font-weight: 700;
+        }
+
+        .badge-status { font-size: 0.68rem; border-radius: 5px; padding: 0.15rem 0.45rem; font-weight: 700; }
+        .badge-status.active   { background: rgba(22,163,74,0.1);  color: #16a34a; }
+        .badge-status.inactive { background: rgba(220,38,38,0.1);  color: #dc2626; }
+
+        .menu-actions { display: flex; gap: 0.35rem; }
+
+        .btn-action {
+            width: 30px; height: 30px;
+            border-radius: 7px;
+            border: 1px solid rgba(0,0,0,0.1);
+            background: rgba(0,0,0,0.04);
+            color: #9b8c85;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; font-size: 0.76rem; transition: all 0.18s;
+        }
+        .btn-action.edit:hover   { background: rgba(170,155,141,0.2); border-color: #aa9b8d; color: #7a6e67; }
+        .btn-action.delete:hover { background: rgba(220,38,38,0.1);   border-color: #dc2626; color: #dc2626; }
+        .btn-action.toggle:hover { background: rgba(22,163,74,0.1);   border-color: #16a34a; color: #16a34a; }
+
+        .menu-children { padding: 0.3rem 0.5rem 0.5rem; }
+
+        .parent-label {
+            font-size: 0.62rem; color: #e05a2b; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.4px;
+            background: rgba(224,90,43,0.1); padding: 0.1rem 0.4rem; border-radius: 4px;
+        }
+        .sub-label {
+            font-size: 0.62rem; color: #7a6e67; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.4px;
+            background: rgba(170,155,141,0.2); padding: 0.1rem 0.4rem; border-radius: 4px;
+        }
+
+        /* ── Stats ── */
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.25rem; }
+
+        .stat-card {
+            background: #fff;
+            border: 1px solid rgba(0,0,0,0.07);
+            border-radius: 14px;
+            padding: 1rem 1.25rem;
+            display: flex; align-items: center; gap: 1rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+        }
+
+        .stat-icon { width: 42px; height: 42px; border-radius: 11px; display: flex; align-items: center; justify-content: center; font-size: 1.05rem; flex-shrink: 0; }
+        .stat-icon.orange { background: rgba(224,90,43,0.12); color: #e05a2b; }
+        .stat-icon.brown  { background: rgba(170,155,141,0.2); color: #7a6e67; }
+        .stat-icon.dark   { background: rgba(46,29,25,0.1);    color: #2e1d19; }
+
+        .stat-value { font-size: 1.5rem; font-weight: 800; color: #2e1d19; }
+        .stat-label { font-size: 0.76rem; color: #8c827c; font-weight: 500; }
+
+        /* ── Modal ── */
+        .modal-custom {
+            display: none; position: fixed; inset: 0; z-index: 2000;
+            background: rgba(64,54,50,0.5); backdrop-filter: blur(4px);
+            align-items: center; justify-content: center;
+        }
+        .modal-custom.show { display: flex; }
+
+        .modal-box {
+            background: #fff;
+            border-radius: 20px;
+            padding: 2rem;
+            width: 90%; max-width: 560px;
+            max-height: 90vh; overflow-y: auto;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.15);
+        }
+
+        .modal-title-custom {
+            font-size: 1.1rem; font-weight: 800; color: #2e1d19;
+            margin-bottom: 1.25rem;
+            display: flex; align-items: center; gap: 0.5rem;
+        }
+
+        .alert-success-custom {
+            background: rgba(22,163,74,0.08); border: 1px solid rgba(22,163,74,0.25);
+            color: #16a34a; border-radius: 10px; padding: 0.7rem 1rem;
+            font-size: 0.84rem; margin-bottom: 1rem;
+        }
+        .alert-error-custom {
+            background: rgba(220,38,38,0.08); border: 1px solid rgba(220,38,38,0.25);
+            color: #dc2626; border-radius: 10px; padding: 0.7rem 1rem;
+            font-size: 0.84rem; margin-bottom: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar động -->
+    <div id="dyn-navbar-container"></div>
+    <div id="app-header" style="display:none"></div>
+
+    <!-- Modal thêm/sửa -->
+    <div class="modal-custom" id="menuModal">
+        <div class="modal-box">
+            <h4 class="modal-title-custom" id="modalTitle">Thêm Menu mới</h4>
+            <div id="modalMsg"></div>
+            <input type="hidden" id="editMenuId">
+
+            <div class="mb-3">
+                <div class="form-label-custom">Tên menu *</div>
+                <input type="text" id="fMenuName" class="form-control-custom" placeholder="Ví dụ: Thể loại, Trang chủ...">
+            </div>
+            <div class="mb-3">
+                <div class="form-label-custom">URL *</div>
+                <input type="text" id="fMenuUrl" class="form-control-custom" placeholder="/pages/truyen-moi.html hoặc #">
+            </div>
+            <div class="row g-2 mb-3">
+                <div class="col-6">
+                    <div class="form-label-custom">Menu cha (để trống = gốc)</div>
+                    <select id="fParentId" class="form-control-custom">
+                        <option value="">-- Không có (menu gốc) --</option>
+                    </select>
+                </div>
+                <div class="col-3">
+                    <div class="form-label-custom">Thứ tự</div>
+                    <input type="number" id="fSortOrder" class="form-control-custom" value="1" min="1" max="99">
+                </div>
+                <div class="col-3">
+                    <div class="form-label-custom">Mở tab</div>
+                    <select id="fTarget" class="form-control-custom">
+                        <option value="_self">Cùng tab</option>
+                        <option value="_blank">Tab mới</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row g-2 mb-3">
+                <div class="col-8">
+                    <div class="form-label-custom">Icon (FontAwesome class)</div>
+                    <input type="text" id="fIcon" class="form-control-custom" placeholder="fa-solid fa-house">
+                </div>
+                <div class="col-4">
+                    <div class="form-label-custom">Hiển thị</div>
+                    <select id="fIsActive" class="form-control-custom">
+                        <option value="true">Hiện</option>
+                        <option value="false">Ẩn</option>
+                    </select>
+                </div>
+            </div>
+            <div class="d-flex gap-2 justify-content-end mt-3">
+                <button class="btn-secondary-custom" onclick="closeModal()">Hủy</button>
+                <button class="btn-primary-custom" id="btnSaveMenu" onclick="saveMenu()">
+                    <i class="fa-solid fa-floppy-disk me-1"></i>Lưu
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="page-container">
+        <!-- Header -->
+        <div class="d-flex align-items-center justify-content-between mb-1">
+            <div>
+                <div class="page-title"><i class="fa-solid fa-bars-staggered me-2"></i>Quản lý Menu</div>
+                <div class="page-subtitle">Thêm, sửa, xóa và sắp xếp menu động trên thanh navbar</div>
+            </div>
+            <button class="btn-primary-custom" onclick="openAddModal()">
+                <i class="fa-solid fa-plus me-1"></i>Thêm Menu
+            </button>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon orange"><i class="fa-solid fa-list"></i></div>
+                <div><div class="stat-value" id="statTotal">—</div><div class="stat-label">Tổng menu</div></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon brown"><i class="fa-solid fa-eye"></i></div>
+                <div><div class="stat-value" id="statActive">—</div><div class="stat-label">Đang hiển thị</div></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon dark"><i class="fa-solid fa-sitemap"></i></div>
+                <div><div class="stat-value" id="statParent">—</div><div class="stat-label">Menu gốc</div></div>
+            </div>
+        </div>
+
+        <!-- Alert toàn trang -->
+        <div id="pageAlert" style="display:none"></div>
+
+        <!-- Menu Tree -->
+        <div class="menu-card">
+            <div class="menu-card-title">
+                <i class="fa-solid fa-sitemap"></i>Cây Menu Navbar
+                <button class="btn-secondary-custom ms-auto" style="padding:0.4rem 0.9rem;font-size:0.8rem" onclick="loadMenus()">
+                    <i class="fa-solid fa-rotate me-1"></i>Làm mới
+                </button>
+            </div>
+            <ul class="menu-tree" id="menuTree">
+                <li class="text-center py-4" style="color:#6c757d">
+                    <i class="fa-solid fa-spinner fa-spin me-2"></i>Đang tải menu...
+                </li>
+            </ul>
+        </div>
+
+        <!-- Preview navbar -->
+        <div class="menu-card">
+            <div class="menu-card-title"><i class="fa-solid fa-desktop"></i>Xem trước Navbar</div>
+            <div style="background:#ececec; border-radius:10px; overflow:hidden; border:1px solid rgba(0,0,0,0.07);">
+                <div id="navbarPreview"></div>
+            </div>
+            <p class="text-muted small mt-2 mb-0">
+                <i class="fa-solid fa-circle-info me-1"></i>
+                Preview hiển thị navbar dựa trên dữ liệu hiện tại. Sau khi lưu, navbar tự động cập nhật.
+            </p>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/js/api.js"></script>
+    <script src="../assets/js/navbar.js"></script>
+    <script src="../assets/js/script.js"></script>
+
+    <script>
+        let allMenus = [];
+
+        // ── Kiểm tra quyền admin ──
+        document.addEventListener('DOMContentLoaded', () => {
+            const user = JSON.parse(localStorage.getItem('user') || 'null');
+            if (!user || user.role.toLowerCase() !== 'admin') {
+                document.querySelector('.page-container').innerHTML = `
+                    <div class="text-center py-5">
+                        <i class="fa-solid fa-lock fa-3x mb-3" style="color:#e05a2b"></i>
+                        <h3 style="color:#2e1d19">Không có quyền truy cập</h3>
+                        <p style="color:#8c827c">Chỉ Admin mới có thể quản lý menu.</p>
+                        <a href="../index.html" class="btn-primary-custom" style="display:inline-block;margin-top:1rem">Về trang chủ</a>
+                    </div>`;
+                return;
+            }
+            loadMenus();
+        });
+
+        // ── Load menus ──
+        async function loadMenus() {
+            try {
+                allMenus = await ApiService.getAllMenus() || [];
+                renderMenuTree();
+                renderPreview();
+                updateStats();
+                populateParentSelect();
+            } catch (e) {
+                showPageAlert('error', 'Không thể tải danh sách menu: ' + e.message);
+            }
+        }
+
+        function updateStats() {
+            document.getElementById('statTotal').textContent = allMenus.length;
+            document.getElementById('statActive').textContent = allMenus.filter(m => m.isActive).length;
+            document.getElementById('statParent').textContent = allMenus.filter(m => !m.parentId).length;
+        }
+
+        // ── Render cây menu ──
+        function renderMenuTree() {
+            const roots = allMenus.filter(m => !m.parentId).sort((a,b) => (a.sortOrder||1) - (b.sortOrder||1));
+            const treeEl = document.getElementById('menuTree');
+
+            if (roots.length === 0) {
+                treeEl.innerHTML = '<li class="text-center py-4" style="color:#6c757d">Chưa có menu nào. Nhấn <strong>Thêm Menu</strong> để bắt đầu.</li>';
+                return;
+            }
+
+            treeEl.innerHTML = roots.map(root => {
+                const children = allMenus.filter(m => m.parentId === root.id).sort((a,b) => (a.sortOrder||1) - (b.sortOrder||1));
+                const childrenHTML = children.map(c => renderMenuRow(c, true)).join('');
+                return `<li class="menu-tree-item">
+                    ${renderMenuRow(root, false)}
+                    ${children.length ? `<div class="menu-children">${childrenHTML}</div>` : ''}
+                </li>`;
+            }).join('');
+        }
+
+        function renderMenuRow(menu, isChild) {
+            const icon = menu.icon || 'fa-solid fa-link';
+            const activeStatus = menu.isActive ? 'active' : 'inactive';
+            const activeLabel = menu.isActive ? 'Hiển thị' : 'Ẩn';
+            const parentLabel = !isChild ? '<span class="parent-label">Root</span>' : '<span class="sub-label">Sub</span>';
+
+            return `<div class="menu-tree-item-header ${isChild ? 'child-item' : ''}">
+                <div class="menu-icon"><i class="${escHTML(icon)}"></i></div>
+                <div class="menu-info">
+                    <div class="menu-name">${escHTML(menu.menuName)} ${parentLabel}</div>
+                    <div class="menu-url">${escHTML(menu.menuUrl)}</div>
+                </div>
+                <div class="menu-meta">
+                    <span class="badge-sort">#${menu.sortOrder || 1}</span>
+                    <span class="badge-status ${activeStatus}">${activeLabel}</span>
+                </div>
+                <div class="menu-actions">
+                    <button class="btn-action toggle" title="Bật/Tắt" onclick="toggleMenu(${menu.id}, ${menu.isActive})">
+                        <i class="fa-solid fa-${menu.isActive ? 'eye' : 'eye-slash'}"></i>
+                    </button>
+                    <button class="btn-action edit" title="Sửa" onclick="openEditModal(${menu.id})">
+                        <i class="fa-solid fa-pen"></i>
+                    </button>
+                    <button class="btn-action delete" title="Xóa" onclick="deleteMenu(${menu.id}, '${escHTML(menu.menuName)}')">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </div>
+            </div>`;
+        }
+
+        function escHTML(s) {
+            if (!s) return '';
+            return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        }
+
+        // ── Render Preview ──
+        async function renderPreview() {
+            try {
+                const tree = await ApiService.getMenuTree() || [];
+                const previewEl = document.getElementById('navbarPreview');
+                if (!previewEl) return;
+                // Dùng DynNavbar để render
+                const tempDiv = document.createElement('div');
+                tempDiv.id = 'dyn-navbar-container';
+                previewEl.innerHTML = '';
+                previewEl.appendChild(tempDiv);
+                if (window.DynNavbar) await window.DynNavbar.refresh();
+            } catch(e) {}
+        }
+
+        // ── Populate parent select ──
+        function populateParentSelect(excludeId = null) {
+            const sel = document.getElementById('fParentId');
+            const roots = allMenus.filter(m => !m.parentId && m.id !== excludeId);
+            sel.innerHTML = '<option value="">-- Không có (menu gốc) --</option>';
+            roots.forEach(m => {
+                sel.innerHTML += `<option value="${m.id}">${escHTML(m.menuName)}</option>`;
+            });
+        }
+
+        // ── Modal ──
+        function openAddModal() {
+            document.getElementById('modalTitle').textContent = 'Thêm Menu mới';
+            document.getElementById('editMenuId').value = '';
+            document.getElementById('fMenuName').value = '';
+            document.getElementById('fMenuUrl').value = '#';
+            document.getElementById('fParentId').value = '';
+            document.getElementById('fSortOrder').value = '1';
+            document.getElementById('fTarget').value = '_self';
+            document.getElementById('fIcon').value = '';
+            document.getElementById('fIsActive').value = 'true';
+            document.getElementById('modalMsg').innerHTML = '';
+            populateParentSelect();
+            document.getElementById('menuModal').classList.add('show');
+        }
+
+        function openEditModal(id) {
+            const menu = allMenus.find(m => m.id === id);
+            if (!menu) return;
+            document.getElementById('modalTitle').textContent = 'Sửa Menu: ' + menu.menuName;
+            document.getElementById('editMenuId').value = menu.id;
+            document.getElementById('fMenuName').value = menu.menuName || '';
+            document.getElementById('fMenuUrl').value = menu.menuUrl || '#';
+            document.getElementById('fSortOrder').value = menu.sortOrder || 1;
+            document.getElementById('fTarget').value = menu.target || '_self';
+            document.getElementById('fIcon').value = menu.icon || '';
+            document.getElementById('fIsActive').value = menu.isActive ? 'true' : 'false';
+            document.getElementById('modalMsg').innerHTML = '';
+            populateParentSelect(id);
+            document.getElementById('fParentId').value = menu.parentId || '';
+            document.getElementById('menuModal').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('menuModal').classList.remove('show');
+        }
+
+        // Click ngoài modal để đóng
+        document.getElementById('menuModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('menuModal')) closeModal();
+        });
+
+        // ── Save Menu ──
+        async function saveMenu() {
+            const id = document.getElementById('editMenuId').value;
+            const menuName = document.getElementById('fMenuName').value.trim();
+            const menuUrl = document.getElementById('fMenuUrl').value.trim();
+            const parentIdVal = document.getElementById('fParentId').value;
+            const sortOrder = parseInt(document.getElementById('fSortOrder').value) || 1;
+            const target = document.getElementById('fTarget').value;
+            const icon = document.getElementById('fIcon').value.trim();
+            const isActive = document.getElementById('fIsActive').value === 'true';
+
+            if (!menuName) { showModalMsg('error', 'Vui lòng nhập tên menu!'); return; }
+            if (!menuUrl) { showModalMsg('error', 'Vui lòng nhập URL!'); return; }
+
+            const payload = {
+                menuName, menuUrl,
+                parentId: parentIdVal ? parseInt(parentIdVal) : null,
+                sortOrder, target, icon: icon || null, isActive
+            };
+
+            const btn = document.getElementById('btnSaveMenu');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i>Đang lưu...';
+
+            try {
+                if (id) {
+                    await ApiService.updateMenu(parseInt(id), payload);
+                    showPageAlert('success', '✅ Đã cập nhật menu thành công!');
+                } else {
+                    await ApiService.createMenu(payload);
+                    showPageAlert('success', '✅ Đã thêm menu mới thành công!');
+                }
+                closeModal();
+                await loadMenus();
+            } catch (e) {
+                showModalMsg('error', 'Lỗi: ' + e.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-floppy-disk me-1"></i>Lưu';
+            }
+        }
+
+        // ── Delete ──
+        async function deleteMenu(id, name) {
+            if (!confirm(`Bạn có chắc muốn xóa menu "${name}"?\nCác menu con sẽ bị xóa theo!`)) return;
+            try {
+                await ApiService.deleteMenu(id);
+                showPageAlert('success', `✅ Đã xóa menu "${name}" thành công!`);
+                await loadMenus();
+            } catch (e) {
+                showPageAlert('error', 'Không thể xóa: ' + e.message);
+            }
+        }
+
+        // ── Toggle active ──
+        async function toggleMenu(id, currentActive) {
+            const menu = allMenus.find(m => m.id === id);
+            if (!menu) return;
+            try {
+                await ApiService.updateMenu(id, { ...menu, isActive: !currentActive });
+                await loadMenus();
+            } catch (e) {
+                showPageAlert('error', 'Lỗi: ' + e.message);
+            }
+        }
+
+        // ── Alerts ──
+        function showPageAlert(type, msg) {
+            const el = document.getElementById('pageAlert');
+            el.className = type === 'success' ? 'alert-success-custom' : 'alert-error-custom';
+            el.textContent = msg;
+            el.style.display = 'block';
+            setTimeout(() => el.style.display = 'none', 4000);
+        }
+
+        function showModalMsg(type, msg) {
+            const el = document.getElementById('modalMsg');
+            el.className = type === 'success' ? 'alert-success-custom' : 'alert-error-custom';
+            el.textContent = msg;
+        }
+
+        // ── API thêm vào ApiService ──
+        ApiService.createMenu = function(data) {
+            return this.fetchWithTimeout('/menus', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+        };
+        ApiService.updateMenu = function(id, data) {
+            return this.fetchWithTimeout('/menus/' + id, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+        };
+        ApiService.deleteMenu = function(id) {
+            return this.fetchWithTimeout('/menus/' + id, { method: 'DELETE' });
+        };
+    </script>
+</body>
+</html>
