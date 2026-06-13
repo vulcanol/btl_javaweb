@@ -102,7 +102,7 @@
             </a></li>
         `;
 
-        if (role === 'admin' || role === 'uploader' || role === 'translator') {
+        if (role === 'admin' || role === 'uploader' || role === 'translator' || role === 'user') {
             userMenuItems += `<li><a href="${pagesPath}dang-truyen.html" class="dyn-user-dropdown-item">
                 <i class="fa-solid fa-upload"></i>Đăng truyện
             </a></li>`;

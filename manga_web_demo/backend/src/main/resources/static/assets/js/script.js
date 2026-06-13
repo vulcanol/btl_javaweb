@@ -222,7 +222,7 @@ const injectHeaderComponent = () => {
 
     const role = userData ? userData.role.toLowerCase() : 'guest';
     const isSystemAdmin = role === 'admin';
-    const canUpload = role === 'admin' || role === 'uploader' || role === 'translator';
+    const canUpload = role === 'admin' || role === 'uploader' || role === 'translator' || role === 'user';
     const canManageGroup = role === 'admin' || role === 'uploader';
 
     // Xây dựng menu bên trái

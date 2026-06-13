@@ -45,10 +45,10 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/chapter/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/comment/**").permitAll()
                 
-                // Uploader/Translator/Admin/Editor Endpoints
-                .requestMatchers(HttpMethod.POST, "/api/manga/**").hasAnyRole("ADMIN", "UPLOADER", "TRANSLATOR", "EDITOR")
-                .requestMatchers(HttpMethod.PUT, "/api/manga/**").hasAnyRole("ADMIN", "UPLOADER", "TRANSLATOR", "EDITOR")
-                .requestMatchers(HttpMethod.POST, "/api/chapter/**").hasAnyRole("ADMIN", "UPLOADER", "TRANSLATOR", "EDITOR")
+                // Uploader/Translator/Admin/Editor/User Endpoints
+                .requestMatchers(HttpMethod.POST, "/api/manga/**").hasAnyRole("ADMIN", "UPLOADER", "TRANSLATOR", "EDITOR", "USER")
+                .requestMatchers(HttpMethod.PUT, "/api/manga/**").hasAnyRole("ADMIN", "UPLOADER", "TRANSLATOR", "EDITOR", "USER")
+                .requestMatchers(HttpMethod.POST, "/api/chapter/**").hasAnyRole("ADMIN", "UPLOADER", "TRANSLATOR", "EDITOR", "USER")
                 
                 // Group Endpoints
                 .requestMatchers(HttpMethod.GET, "/api/groups/my-group").authenticated()
